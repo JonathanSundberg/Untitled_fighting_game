@@ -63,3 +63,7 @@ sysinfo.txt
 crashlytics-build.properties
 
 Untitled_fighting_game/Temp/UnityLockfile
+
+# Secret file containing private ids and keys
+**/Secrets.cs
+**/Secrets.cs.meta
