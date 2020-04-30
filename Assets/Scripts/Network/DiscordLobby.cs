@@ -97,6 +97,44 @@ namespace Network
 
             return taskSource.Task;
         }
+
+        public Task Connect()
+        {
+            var lobbyManager = _discord.GetLobbyManager();
+            
+            var taskSource = new TaskCompletionSource<object>();
+            lobbyManager.ConnectLobby(_lobby.Id, _lobby.Secret, (Result result, ref Lobby lobby) =>
+            {
+                if (result != Result.Ok)
+                {
+                    taskSource.SetException(new ResultException(result));
+                    return;
+                }
+                
+                taskSource.SetResult(null);
+            });
+
+            return taskSource.Task;
+        }
+        
+        public Task Disconnect()
+        {
+            var lobbyManager = _discord.GetLobbyManager();
+            
+            var taskSource = new TaskCompletionSource<object>();
+            lobbyManager.DisconnectLobby(_lobby.Id, result =>
+            {
+                if (result != Result.Ok)
+                {
+                    taskSource.SetException(new ResultException(result));
+                    return;
+                }
+                
+                taskSource.SetResult(null);
+            });
+
+            return taskSource.Task;
+        }
             
         public void ConnectNetwork()
         {

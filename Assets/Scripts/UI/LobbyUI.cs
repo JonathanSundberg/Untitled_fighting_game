@@ -9,8 +9,10 @@ namespace UI
 {
     public class LobbyUI : MonoBehaviour
     {
-        [SerializeField] private TextButton _connectButton;
-        [SerializeField] private TextButton _disconnectButton;
+        [SerializeField] private TextButton _lobbyConnectButton;
+        [SerializeField] private TextButton _lobbyDisconnectButton;
+        [SerializeField] private TextButton _networkConnectButton;
+        [SerializeField] private TextButton _networkDisconnectButton;
         [SerializeField] private TextButton _deleteButton;
         [SerializeField] private TMP_InputField _inputField;
         [SerializeField] private TextButton _sendButton;
@@ -20,18 +22,33 @@ namespace UI
         public void Initialize(DiscordLobby lobby)
         {
             _lobby = lobby;
-            _connectButton.OnClick += () =>
+            
+            _lobbyConnectButton.OnClick += async () =>
             {
-                _lobby.ConnectNetwork();
-                _connectButton.gameObject.SetActive(false);
-                _disconnectButton.gameObject.SetActive(true);
+                await _lobby.Connect();
+                _lobbyConnectButton.gameObject.SetActive(false);
+                _lobbyDisconnectButton.gameObject.SetActive(true);
             };
             
-            _disconnectButton.OnClick += () =>
+            _lobbyDisconnectButton.OnClick += async () =>
+            {
+                await _lobby.Disconnect();
+                _lobbyConnectButton.gameObject.SetActive(true);
+                _lobbyDisconnectButton.gameObject.SetActive(false);
+            };
+            
+            _networkConnectButton.OnClick += async () =>
+            {
+                _lobby.ConnectNetwork();
+                _networkConnectButton.gameObject.SetActive(false);
+                _networkDisconnectButton.gameObject.SetActive(true);
+            };
+            
+            _networkDisconnectButton.OnClick += () =>
             {
                 _lobby.DisconnectNetwork();
-                _connectButton.gameObject.SetActive(true);
-                _disconnectButton.gameObject.SetActive(false);
+                _networkConnectButton.gameObject.SetActive(true);
+                _networkDisconnectButton.gameObject.SetActive(false);
             };
             
             _deleteButton.OnClick += () => _lobby.Delete();
