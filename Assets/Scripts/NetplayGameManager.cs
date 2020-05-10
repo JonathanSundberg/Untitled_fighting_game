@@ -57,8 +57,8 @@ public class NetplayGameManager : MonoBehaviour
     {
         if (_lobby != null) throw new NotImplementedException();
         
+        await lobby.Connect();
         _lobby = lobby;
-        await _lobby.Connect();
         _lobby.ConnectNetwork();
         _lobby.NetworkMessageReceived += NetworkMessageReceived;
         
@@ -66,8 +66,7 @@ public class NetplayGameManager : MonoBehaviour
         _remotePlayer = _synchronizer.AddPlayer(PlayerType.Remote);
         _localPlayer  = _synchronizer.AddPlayer(PlayerType.Local);
 
-        _gameStarted = true;
-        _lobby.SendNetworkMessage(0, Encoding.UTF8.GetBytes("START"));
+        _lobby.SendNetworkMessage(0, Encoding.UTF8.GetBytes("READY"));
     }
     
     public static void CreateMatch(DiscordLobby lobby) => _instance.CreateMatchInternal(lobby);
@@ -155,8 +154,9 @@ public class NetplayGameManager : MonoBehaviour
         {
             case 0:
             {
-                if (Encoding.UTF8.GetString(data) == "START")
+                if (Encoding.UTF8.GetString(data) == "READY" && _gameStarted == false)
                 {
+                    _lobby.SendNetworkMessage(0, Encoding.UTF8.GetBytes("READY"));
                     _gameStarted = true;
                 }
                 
@@ -182,11 +182,7 @@ public class NetplayGameManager : MonoBehaviour
                 else
                 {
                     var rtt = now - package.Created;
-                    var ping = package.Received - package.Created;
-                    var pong = now - package.Received;
-
                     _synchronizer.SetPing(_remotePlayer, rtt / 2f);
-                    Debug.Log($"Ping Complete, Id:{package.Id}, RTT:{rtt}ms, Ping:{ping}, Pong:{pong}");
                 }
 
                 break;

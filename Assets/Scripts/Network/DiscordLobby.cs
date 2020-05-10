@@ -187,11 +187,14 @@ namespace Network
         public void SendNetworkMessage(byte channelId, byte[] message)
         {
             var lobbyManager = _discord.GetLobbyManager();
+            var currentUser = DiscordManager.CurrentUser;
 
             var memberCount = lobbyManager.MemberCount(_lobby.Id);
             for (var memberIndex = 0; memberIndex < memberCount; memberIndex++)
             {
                 var memberUserId = lobbyManager.GetMemberUserId(_lobby.Id, memberIndex);
+                if (memberUserId == currentUser.Id) continue;
+                
                 lobbyManager.SendNetworkMessage(_lobby.Id, memberUserId, channelId, message);
             }
         }

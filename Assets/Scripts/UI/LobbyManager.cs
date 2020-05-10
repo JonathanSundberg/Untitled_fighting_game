@@ -61,12 +61,23 @@ namespace UI
 
                 gameObject.SetActive(true);
                 button.Label = $"{owner.Username}#{owner.Discriminator}";
-                button.OnClick += () =>
+
+                if (owner.Id != DiscordManager.CurrentUser.Id)
                 {
-                    NetplayGameManager.JoinMatch(lobby);
-                    _lobbyList.gameObject.SetActive(false);
-                    _createLobbyButton.gameObject.SetActive(false);
-                };
+                    button.OnClick += () =>
+                    {
+                        NetplayGameManager.JoinMatch(lobby);
+                        _lobbyList.gameObject.SetActive(false);
+                        _createLobbyButton.gameObject.SetActive(false);
+                    };
+                }
+                else
+                {
+                    button.OnClick += () =>
+                    {
+                        lobby.Delete();
+                    };
+                }
 
                 _fightRequests.Add(gameObject);
             }

@@ -101,7 +101,8 @@ namespace Network.Rollback
                 highestFrameAdvantage = Math.Max(highestFrameAdvantage, estimatedFrameAdvantage);
             }
 
-            //_timeSpentOnFrame -= highestFrameAdvantage * Constants.FRAME_DELAY_FACTOR;
+            UnityEngine.Debug.Log($"Frames ahead {highestFrameAdvantage}, delaying this frame with {highestFrameAdvantage * Constants.FRAME_DELAY_FACTOR}ms");
+            _timeSpentOnFrame = Math.Max(0, _timeSpentOnFrame - highestFrameAdvantage * Constants.FRAME_DELAY_FACTOR);
 
             _timeSpentOnFrame += deltaTimeMs;
             if (_timeSpentOnFrame < Constants.MS_PER_FRAME) return;
@@ -176,6 +177,11 @@ namespace Network.Rollback
         public void SetPing(PlayerHandle playerHandle, float ms)
         {
             GetPlayer(playerHandle).Ping = ms;
+        }
+        
+        public float GetPing(PlayerHandle playerHandle)
+        {
+            return GetPlayer(playerHandle).Ping;
         }
 
         private TInputState[] GetInputs(int frame)

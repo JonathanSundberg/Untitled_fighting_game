@@ -41,7 +41,11 @@ namespace Network
             _discord = new Discord.Discord(Secrets.DISCORD_CLIENT_ID, (ulong) CreateFlags.NoRequireDiscord);
 #endif
 
-            //CurrentUser = Discord.GetUserManager().GetCurrentUser();
+            var userManager = Discord.GetUserManager();
+            userManager.OnCurrentUserUpdate += () =>
+            {
+                CurrentUser = userManager.GetCurrentUser();
+            };
         }
 
         private void LateUpdate()
