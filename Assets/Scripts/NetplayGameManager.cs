@@ -82,8 +82,6 @@ public class NetplayGameManager : MonoBehaviour
         _synchronizer = new GameSynchronizer<GameState, InputState>(SaveGame, LoadGame, SimulateGame, BroadcastInput);
         _localPlayer  = _synchronizer.AddPlayer(PlayerType.Local);
         _remotePlayer = _synchronizer.AddPlayer(PlayerType.Remote);
-
-        _gameStarted = true;
     }
 
     private void Update()
