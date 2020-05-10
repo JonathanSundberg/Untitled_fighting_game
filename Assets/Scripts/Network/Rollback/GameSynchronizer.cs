@@ -5,7 +5,7 @@ using System.Threading;
 namespace Network.Rollback
 {
     public class GameSynchronizer<TGameState, TInputState>
-    where TGameState  : struct, IEquatable<TGameState>
+    where TGameState  : struct
     where TInputState : struct, IEquatable<TInputState>
     {
         private struct GameState

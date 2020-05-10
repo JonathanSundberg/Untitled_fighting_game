@@ -13,5 +13,11 @@ namespace Logic
             return Player1.Equals(other.Player1) 
                 && Player2.Equals(other.Player2);
         }
+
+        public void Update(InputState player1Input, InputState player2Input)
+        {
+            Player1.Update(player1Input);
+            Player2.Update(player2Input);
+        }
     }
 }

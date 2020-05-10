@@ -94,8 +94,8 @@ public class NetplayGameManager : MonoBehaviour
         _synchronizer.AddLocalInput(_localPlayer, ReadLocalInput());
         _synchronizer.Update(Time.deltaTime * 1000);
         
-        _p1Transform.position = (Vector2) _gameState.Player1.Position.xy;
-        _p2Transform.position = (Vector2) _gameState.Player2.Position.xy;
+        _p1Transform.position = (Vector2) _gameState.Player1.Position;
+        _p2Transform.position = (Vector2) _gameState.Player2.Position;
     }
 
     private void PingPlayers()
