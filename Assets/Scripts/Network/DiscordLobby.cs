@@ -15,14 +15,31 @@ namespace Network
         public LobbyType Type => _lobby.Type;
         public bool Locked => _lobby.Locked;
         public string Secret => _lobby.Secret;
-        
-        public delegate void NetworkMessageCallback(long userId, byte[] message);
-        public event NetworkMessageCallback OnNetworkMessage;
+        public Task<User> Owner { get
+        {
+            var taskSource = new TaskCompletionSource<User>();
+            
+            _discord.GetUserManager().GetUser(_lobby.OwnerId, (Result result, ref User user) =>
+            {
+                if (result != Result.Ok)
+                {
+                    taskSource.SetException(new ResultException(result));
+                    return;
+                }
+                
+                taskSource.SetResult(user);
+            });
+            
+            return taskSource.Task;
+        }}
+
+        public delegate void NetworkMessageCallback(long userId, byte channelId, byte[] message);
+        public event NetworkMessageCallback NetworkMessageReceived;
 
         public delegate void ModifyLobbyTransaction(ref LobbyTransaction transaction);
         public static Task<DiscordLobby> Create(ModifyLobbyTransaction modifyCallback = null)
         {
-            var discord = DiscordWrapper.Discord;
+            var discord = DiscordManager.Discord;
             var lobbyManager = discord.GetLobbyManager();
             var transaction = lobbyManager.GetLobbyCreateTransaction();
             
@@ -46,7 +63,7 @@ namespace Network
         public delegate void ModifyLobbySearchQuery(ref LobbySearchQuery searchQuery);
         public static Task<DiscordLobby[]> Search(ModifyLobbySearchQuery modifyCallback = null)
         {
-            var discord = DiscordWrapper.Discord;
+            var discord = DiscordManager.Discord;
             var lobbyManager = discord.GetLobbyManager();
             var searchQuery = lobbyManager.GetSearchQuery();
             
@@ -82,7 +99,21 @@ namespace Network
         {
             _discord = discord;
             _lobby = lobby;
+        }
 
+        public User[] GetMembers()
+        {
+            var lobbyManager = _discord.GetLobbyManager();
+            var memberCount = lobbyManager.MemberCount(_lobby.Id);
+            var members = new User[memberCount];
+            
+            for (var memberIndex = 0; memberIndex < memberCount; memberIndex++)
+            {
+                var userId = lobbyManager.GetMemberUserId(_lobby.Id, memberIndex);
+                members[memberIndex] = lobbyManager.GetMemberUser(_lobby.Id, userId);
+            }
+
+            return members;
         }
 
         public Task<bool> Delete()
@@ -141,17 +172,19 @@ namespace Network
             var lobbyManager = _discord.GetLobbyManager();
             lobbyManager.ConnectNetwork(_lobby.Id);
             lobbyManager.OpenNetworkChannel(_lobby.Id, 0, true);
-            lobbyManager.OnNetworkMessage += NetworkMessage;
+            lobbyManager.OpenNetworkChannel(_lobby.Id, 1, false);
+            lobbyManager.OpenNetworkChannel(_lobby.Id, 2, false);
+            lobbyManager.OnNetworkMessage += OnNetworkMessage;
         }
 
         public void DisconnectNetwork()
         {
             var lobbyManager = _discord.GetLobbyManager();
             lobbyManager.DisconnectNetwork(_lobby.Id);
-            lobbyManager.OnNetworkMessage -= NetworkMessage;
+            lobbyManager.OnNetworkMessage -= OnNetworkMessage;
         }
 
-        public void SendNetworkMessage(byte[] message)
+        public void SendNetworkMessage(byte channelId, byte[] message)
         {
             var lobbyManager = _discord.GetLobbyManager();
 
@@ -159,14 +192,20 @@ namespace Network
             for (var memberIndex = 0; memberIndex < memberCount; memberIndex++)
             {
                 var memberUserId = lobbyManager.GetMemberUserId(_lobby.Id, memberIndex);
-                lobbyManager.SendNetworkMessage(_lobby.Id, memberUserId, 0, message);
+                lobbyManager.SendNetworkMessage(_lobby.Id, memberUserId, channelId, message);
             }
         }
+        
+        public void SendNetworkMessage(long userId, byte channelId, byte[] message)
+        {
+            var lobbyManager = _discord.GetLobbyManager();
+            lobbyManager.SendNetworkMessage(_lobby.Id, userId, channelId, message);
+        }
 
-        private void NetworkMessage(long lobbyId, long userId, byte channelId, byte[] data)
+        private void OnNetworkMessage(long lobbyId, long userId, byte channelId, byte[] data)
         {
             if (lobbyId != _lobby.Id) return;
-            OnNetworkMessage?.Invoke(userId, data);
+            NetworkMessageReceived?.Invoke(userId, channelId, data);
         }
     }
 }

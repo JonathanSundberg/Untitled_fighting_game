@@ -100,9 +100,8 @@ namespace Network.Rollback
                 var estimatedFrameAdvantage = _currentFrame - player.EstimatedLocalFrame;
                 highestFrameAdvantage = Math.Max(highestFrameAdvantage, estimatedFrameAdvantage);
             }
-            
-            var localDelay = highestFrameAdvantage * Constants.FRAME_DELAY_FACTOR;
-            _timeSpentOnFrame -= localDelay;
+
+            //_timeSpentOnFrame -= highestFrameAdvantage * Constants.FRAME_DELAY_FACTOR;
 
             _timeSpentOnFrame += deltaTimeMs;
             if (_timeSpentOnFrame < Constants.MS_PER_FRAME) return;

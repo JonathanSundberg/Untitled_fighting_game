@@ -5,10 +5,11 @@ using UnityEngine;
 
 namespace Network
 {
-    public class DiscordWrapper : MonoBehaviour
+    public class DiscordManager : MonoBehaviour
     {
-        private static DiscordWrapper _instance;
+        private static DiscordManager _instance;
         public static Discord.Discord Discord => _instance._discord;
+        public static User CurrentUser { get; private set; }
 
 #if DISCORD_DEBUG
         public static bool UseSecondInstance;
@@ -23,7 +24,7 @@ namespace Network
         {
             if (_instance != null)
             {
-                throw new Exception($"You can only have one {nameof(DiscordWrapper)}.");
+                throw new Exception($"You can only have one {nameof(DiscordManager)}.");
             }
 
             DontDestroyOnLoad(this);
@@ -39,12 +40,19 @@ namespace Network
             Environment.SetEnvironmentVariable("DISCORD_INSTANCE_ID", "0");
             _discord = new Discord.Discord(Secrets.DISCORD_CLIENT_ID, (ulong) CreateFlags.NoRequireDiscord);
 #endif
+
+            //CurrentUser = Discord.GetUserManager().GetCurrentUser();
         }
 
         private void LateUpdate()
         {
             _discord.GetLobbyManager().FlushNetwork();
             _discord.RunCallbacks();
+        }
+
+        private void OnApplicationQuit()
+        {
+            _discord.Dispose();
         }
     }
 }
