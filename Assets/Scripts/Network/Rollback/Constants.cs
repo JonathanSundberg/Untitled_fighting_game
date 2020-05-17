@@ -1,6 +1,6 @@
 ﻿namespace Network.Rollback
 {
-    public class Constants
+    public static class Constants
     {
         public const int NULL_FRAME = -1;
         public const float MS_PER_FRAME = 1000 / 60f;

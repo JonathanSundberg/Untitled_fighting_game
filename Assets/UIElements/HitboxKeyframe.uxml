@@ -1,0 +1,4 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <uie:IntegerField label="Start Frame" value="42" />
+    <ui:ListView focusable="True" style="height: 150px;" />
+</ui:UXML>

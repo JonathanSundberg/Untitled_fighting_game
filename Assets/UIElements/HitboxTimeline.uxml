@@ -1,0 +1,21 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement name="root" style="flex-direction: column; flex-grow: 1;">
+        <Style src="HitboxTimeline.uss" />
+        <ui:VisualElement name="controlls" style="flex-grow: 0;">
+            <ui:VisualElement name="frame-controlls" style="flex-direction: row;">
+                <ui:Label text="Frame" style="margin-left: 10px; margin-right: 5px; -unity-text-align: middle-left;" />
+                <uie:IntegerField value="0" name="frame-input" style="width: 45px; margin-right: 10px; margin-left: 5px;" />
+                <ui:SliderInt picking-mode="Ignore" value="15" high-value="40" style="flex-grow: 1;" />
+                <ui:Label text="Duration" style="margin-left: 10px; margin-right: 5px; -unity-text-align: middle-left;" />
+                <uie:IntegerField value="40" name="duration-input" style="width: 45px; margin-right: 10px; margin-left: 5px;" />
+            </ui:VisualElement>
+            <ui:VisualElement style="flex-direction: row;">
+                <ui:Button text="Add Keyframe" style="flex-shrink: 0;" />
+                <ui:Button text="Remove Keyframe" style="flex-shrink: 0;" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="preview-root" style="background-color: rgba(0, 0, 0, 0.1); flex-grow: 1; border-left-width: 0; border-right-width: 0; border-top-width: 2px; border-bottom-width: 0; border-left-color: rgba(0, 0, 0, 0.2); border-right-color: rgba(0, 0, 0, 0.2); border-top-color: rgba(0, 0, 0, 0.2); border-bottom-color: rgba(0, 0, 0, 0.2); align-items: center; justify-content: flex-end;">
+            <ui:VisualElement class="hitbox hurt" style="bottom: 0; left: 0; width: 100px; height: 200px;" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

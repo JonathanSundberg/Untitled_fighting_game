@@ -1,35 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using Logic;
 using Network.Rollback;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Profiling;
 using UnityEngine.UI;
+using Input = UnityEngine.Input;
 
 public class LocalNetcodeTestManager : MonoBehaviour
 {
     private GameSynchronizer<GameState, InputState> _gameSynchronizer;
-
-    public struct GameState : IEquatable<GameState>
-    {
-        public Vector2 Player1Position;
-        public Vector2 Player2Position;
-
-        public bool Equals(GameState other)
-        {
-            return Player1Position == other.Player1Position
-                && Player2Position == other.Player2Position;
-        }
-    }
-
-    public struct InputState : IEquatable<InputState>
-    {
-        public Vector2 Input;
-
-        public bool Equals(InputState other)
-        {
-            return Input == other.Input;
-        }
-    }
 
     private GameState _gameState;
     
@@ -42,8 +23,8 @@ public class LocalNetcodeTestManager : MonoBehaviour
 
     private void Start()
     {
-        _gameState.Player1Position = _p1Transform.position;
-        _gameState.Player2Position = _p2Transform.position;
+        _gameState.Player1.Position = (Vector2) _p1Transform.position;
+        _gameState.Player2.Position = (Vector2) _p2Transform.position;
 
         _gameSynchronizer = new GameSynchronizer<GameState, InputState>
         (
@@ -64,18 +45,7 @@ public class LocalNetcodeTestManager : MonoBehaviour
 
     private void Update()
     {
-        Profiler.BeginSample("Add Local Input");
-        var playerInput = new InputState
-        {
-            Input = new Vector2
-            (
-                Input.GetKey(KeyCode.D) ? 1 : Input.GetKey(KeyCode.A) ? -1 : 0,
-                Input.GetKey(KeyCode.W) ? 1 : Input.GetKey(KeyCode.S) ? -1 : 0
-            )
-        };
-        
-        _gameSynchronizer.AddLocalInput(_p1Handle, playerInput);
-        Profiler.EndSample();
+        _gameSynchronizer.AddLocalInput(_p1Handle, InputState.ReadLocalInputs());
         
         Profiler.BeginSample("Add Remote Input");
         while (_remoteInputs.Count > 0 && _remoteInputs.Peek().timeWithDelay < Time.time)
@@ -90,8 +60,8 @@ public class LocalNetcodeTestManager : MonoBehaviour
 
         _gameSynchronizer.Update(Time.deltaTime * 1000);
         
-        _p1Transform.position = _gameState.Player1Position;
-        _p2Transform.position = _gameState.Player2Position;
+        _p1Transform.position = (Vector2) _gameState.Player1.Position;
+        _p2Transform.position = (Vector2) _gameState.Player2.Position;
         Profiler.EndSample();
     }
     
@@ -107,8 +77,7 @@ public class LocalNetcodeTestManager : MonoBehaviour
 
     private void SimulateGame(InputState[] playerInputs)
     {
-        _gameState.Player1Position += playerInputs[0].Input;
-        _gameState.Player2Position += playerInputs[1].Input;
+        _gameState.Update(playerInputs[0], playerInputs[1]);
     }
     
     private void BroadcastInput(PlayerHandle player, int frame, InputState state)

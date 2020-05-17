@@ -101,7 +101,6 @@ namespace Network.Rollback
                 highestFrameAdvantage = Math.Max(highestFrameAdvantage, estimatedFrameAdvantage);
             }
 
-            UnityEngine.Debug.Log($"Frames ahead {highestFrameAdvantage}, delaying this frame with {highestFrameAdvantage * Constants.FRAME_DELAY_FACTOR}ms");
             _timeSpentOnFrame = Math.Max(0, _timeSpentOnFrame - highestFrameAdvantage * Constants.FRAME_DELAY_FACTOR);
 
             _timeSpentOnFrame += deltaTimeMs;

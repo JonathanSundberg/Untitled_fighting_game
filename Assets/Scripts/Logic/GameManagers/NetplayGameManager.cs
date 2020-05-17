@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Common;
 using Logic;
+using Logic.Characters;
 using Network;
 using Network.Rollback;
 using Unity.Mathematics;
@@ -20,6 +21,14 @@ public class NetplayGameManager : MonoBehaviour
         public long Received;
     }
     
+    [StructLayout(LayoutKind.Sequential)]
+    private struct InputPackage
+    {
+        public int Frame;
+        public InputState State;
+    }
+
+    
     private static NetplayGameManager _instance;
 
     private GameSynchronizer<GameState, InputState> _synchronizer;
@@ -32,8 +41,10 @@ public class NetplayGameManager : MonoBehaviour
     private PlayerHandle _remotePlayer;
     private uint _pingPackageId;
 
-    [SerializeField] private Transform _p1Transform;
-    [SerializeField] private Transform _p2Transform;
+    [SerializeField] private Character _player1Character;
+    [SerializeField] private Transform _player1Transform;
+    [SerializeField] private Character _player2Character;
+    [SerializeField] private Transform _player2Transform;
 
     private void Awake()
     {
@@ -48,8 +59,8 @@ public class NetplayGameManager : MonoBehaviour
 
     private void Start()
     {
-        _gameState.Player1.Position = ((float3) _p1Transform.position).xy;
-        _gameState.Player2.Position = ((float3) _p2Transform.position).xy;
+        _gameState.Player1 = new PlayerState(_player1Character, (Vector2) _player1Transform.position);
+        _gameState.Player2 = new PlayerState(_player2Character, (Vector2) _player2Transform.position);
     }
 
     public static void JoinMatch(DiscordLobby lobby) => _instance.JoinMatchInternal(lobby);
@@ -91,11 +102,11 @@ public class NetplayGameManager : MonoBehaviour
 
         if (!_gameStarted) return;
     
-        _synchronizer.AddLocalInput(_localPlayer, ReadLocalInput());
+        _synchronizer.AddLocalInput(_localPlayer, InputState.ReadLocalInputs());
         _synchronizer.Update(Time.deltaTime * 1000);
         
-        _p1Transform.position = (Vector2) _gameState.Player1.Position;
-        _p2Transform.position = (Vector2) _gameState.Player2.Position;
+        _player1Transform.position = (Vector2) _gameState.Player1.Position;
+        _player2Transform.position = (Vector2) _gameState.Player2.Position;
     }
 
     private void PingPlayers()
@@ -110,23 +121,6 @@ public class NetplayGameManager : MonoBehaviour
         _pingPackageId++;
     }
 
-    private static InputState ReadLocalInput()
-    {
-        return new InputState
-        {
-            Direction = new int2
-            (
-                (Input.GetKey(KeyCode.A) ? -1 : 0) + (Input.GetKey(KeyCode.D) ?  1 : 0), 
-                (Input.GetKey(KeyCode.W) ?  1 : 0) + (Input.GetKey(KeyCode.S) ? -1 : 0)
-            ),
-            
-            A = Input.GetKey(KeyCode.U), 
-            B = Input.GetKey(KeyCode.I),
-            C = Input.GetKey(KeyCode.O),
-            D = Input.GetKey(KeyCode.P)
-        };
-    }
-
     private GameState SaveGame()
     {
         return _gameState;
@@ -139,53 +133,43 @@ public class NetplayGameManager : MonoBehaviour
 
     private void SimulateGame(InputState[] inputStates)
     {
-        _gameState.Player1.Update(inputStates[0]);
-        _gameState.Player2.Update(inputStates[1]);
+        _gameState.Update(inputStates[0], inputStates[1]);
     }
     
     private void BroadcastInput(PlayerHandle player, int frame, InputState state)
     {
-        _lobby.SendNetworkMessage(1, state.CreatePackage(frame));
+        _lobby.SendNetworkMessage(1, new InputPackage {Frame = frame, State = state}.ToBytes());
     }
 
     private void NetworkMessageReceived(long userId, byte channelId, byte[] data)
     {
-        switch (channelId)
+        if (channelId == 0)
         {
-            case 0:
+            if (Encoding.UTF8.GetString(data) == "READY" && _gameStarted == false)
             {
-                if (Encoding.UTF8.GetString(data) == "READY" && _gameStarted == false)
-                {
-                    _lobby.SendNetworkMessage(0, Encoding.UTF8.GetBytes("READY"));
-                    _gameStarted = true;
-                }
-                
-                break;
+                _lobby.SendNetworkMessage(0, Encoding.UTF8.GetBytes("READY"));
+                _gameStarted = true;
             }
-            case 1:
+        }
+        else if (channelId == 1)
+        {
+            var inputPackage = data.ToStruct<InputPackage>();
+            _synchronizer.AddRemoteInput(_remotePlayer, inputPackage.Frame, inputPackage.State);
+        }
+        else if (channelId == 2)
+        {
+            var package = data.ToStruct<PingPackage>();
+            var now = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+
+            if (package.Received == 0)
             {
-                var (frame, input) = InputState.ReadPackage(data);
-                _synchronizer.AddRemoteInput(_remotePlayer, frame, input);
-                
-                break;
+                package.Received = now;
+                _lobby.SendNetworkMessage(userId, 2, package.ToBytes());
             }
-            case 2:
+            else
             {
-                var package = data.ToStruct<PingPackage>();
-                var now = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-
-                if (package.Received == 0)
-                {
-                    package.Received = now;
-                    _lobby.SendNetworkMessage(userId, 2, package.ToBytes());
-                }
-                else
-                {
-                    var rtt = now - package.Created;
-                    _synchronizer.SetPing(_remotePlayer, rtt / 2f);
-                }
-
-                break;
+                var rtt = now - package.Created;
+                _synchronizer.SetPing(_remotePlayer, rtt / 2f);
             }
         }
     }

@@ -1,4 +1,6 @@
-﻿using Network.Rollback;
+﻿using System;
+using Logic.Characters;
+using Network.Rollback;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -6,7 +8,9 @@ namespace Logic.GameManagers
 {
     public class TrainingModeManager : MonoBehaviour
     {
+        [SerializeField] private Character _player1Character;
         [SerializeField] private Transform _player1Transform;
+        [SerializeField] private Character _player2Character;
         [SerializeField] private Transform _player2Transform;
     
         private GameSynchronizer<GameState, InputState> _gameSynchronizer;
@@ -25,8 +29,8 @@ namespace Logic.GameManagers
 
             _playerHandle = _gameSynchronizer.AddPlayer(PlayerType.Local);
 
-            _gameState.Player1.Position = (Vector2) _player1Transform.position;
-            _gameState.Player2.Position = (Vector2) _player2Transform.position;
+            _gameState.Player1 = new PlayerState(_player1Character, (Vector2) _player1Transform.position);
+            _gameState.Player2 = new PlayerState(_player2Character, (Vector2) _player2Transform.position);
         }
 
         private void SimulateGame(InputState[] inputStates)
@@ -40,28 +44,12 @@ namespace Logic.GameManagers
 
         private void Update()
         {
-            _gameSynchronizer.AddLocalInput(_playerHandle, ReadLocalInput());
+            _gameSynchronizer.AddLocalInput(_playerHandle, InputState.ReadLocalInputs());
             _gameSynchronizer.Update(Time.deltaTime * 1000);
 
             _player1Transform.position = (Vector2) _gameState.Player1.Position;
             _player2Transform.position = (Vector2) _gameState.Player2.Position;
-        }
-    
-        private static InputState ReadLocalInput()
-        {
-            return new InputState
-            {
-                Direction = new int2
-                (
-                    (Input.GetKey(KeyCode.A) ? -1 : 0) + (Input.GetKey(KeyCode.D) ?  1 : 0), 
-                    (Input.GetKey(KeyCode.W) ?  1 : 0) + (Input.GetKey(KeyCode.S) ? -1 : 0)
-                ),
-            
-                A = Input.GetKey(KeyCode.U), 
-                B = Input.GetKey(KeyCode.I),
-                C = Input.GetKey(KeyCode.O),
-                D = Input.GetKey(KeyCode.P)
-            };
+            _gameState.DrawHitboxes();
         }
     }
 }

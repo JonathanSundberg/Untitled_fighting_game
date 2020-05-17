@@ -1,0 +1,19 @@
+.hitbox {
+    border-left-color: rgba(255, 255, 255, 0.2);
+    border-right-color: rgba(255, 255, 255, 0.2);
+    border-top-color: rgba(255, 255, 255, 0.2);
+    border-bottom-color: rgba(255, 255, 255, 0.2);
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.hurt {
+    border-left-color: rgba(71, 152, 31, 0.6);
+    border-right-color: rgba(71, 152, 31, 0.6);
+    border-top-color: rgba(71, 152, 31, 0.6);
+    border-bottom-color: rgba(71, 152, 31, 0.6);
+    background-color: rgba(95, 204, 41, 0.4);
+}

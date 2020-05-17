@@ -1,7 +1,6 @@
 ﻿namespace Network.Rollback
 {
     public struct RingBuffer<TElement>
-        where TElement : struct
     {
         private readonly TElement[] _elements;
         private int _lastSetIndex;
