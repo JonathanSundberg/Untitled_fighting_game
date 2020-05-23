@@ -117,6 +117,8 @@ public class NetplayGameManager : MonoBehaviour
         
         _player1Transform.position = (Vector2) _gameState.Player1.Position;
         _player2Transform.position = (Vector2) _gameState.Player2.Position;
+        
+        _gameState.DrawHitboxes();
     }
 
     private void PingPlayers()
