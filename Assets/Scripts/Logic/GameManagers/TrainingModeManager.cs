@@ -1,7 +1,5 @@
-﻿using System;
-using Logic.Characters;
+﻿using Logic.Characters;
 using Network.Rollback;
-using Unity.Mathematics;
 using UnityEngine;
 
 namespace Logic.GameManagers
@@ -19,13 +17,10 @@ namespace Logic.GameManagers
 
         private void Awake()
         {
-            _gameSynchronizer = new GameSynchronizer<GameState, InputState>
-            (
-                SaveGame,
-                LoadGame,
-                SimulateGame,
-                BroadcastInput
-            );
+            _gameSynchronizer = new GameSynchronizer<GameState, InputState>();
+            _gameSynchronizer.SimulateGame += SimulateGame;
+            _gameSynchronizer.SaveGame += SaveGame;
+            _gameSynchronizer.LoadGame += LoadGame;
 
             _playerHandle = _gameSynchronizer.AddPlayer(PlayerType.Local);
 
@@ -38,9 +33,8 @@ namespace Logic.GameManagers
             _gameState.Update(inputStates[0], new InputState());
         }
 
-        private static void BroadcastInput(PlayerHandle player, int frame, InputState state) {}
-        private void LoadGame(GameState gameState) => _gameState = gameState;
         private GameState SaveGame() => _gameState;
+        private void LoadGame(GameState gameState) => _gameState = gameState;
 
         private void Update()
         {

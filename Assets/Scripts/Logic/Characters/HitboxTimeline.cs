@@ -6,71 +6,67 @@ using UnityEngine;
 
 namespace Logic.Characters
 {
-    [CreateAssetMenu(menuName = "Settings/" + nameof(HitboxTimeline))]
-    public class HitboxTimeline : ScriptableObject
+    [Serializable]
+    public struct HitboxTimeline 
     {
         [Serializable]
-        private struct HitboxKeyframe
+        private struct HitboxKeyFrame
         {
             public int StartFrame;
             public Hitbox[] Hitboxes;
         }
         
-        [SerializeField] private int _duration;
-        [SerializeField] private HitboxKeyframe[] _timeline;
-
+        [SerializeField] private HitboxKeyFrame[] _keyframes;
+        
         public Hitbox[] this[int frame] => GetHitboxes(frame);
-        public int Duration { get => _duration; set => _duration = value; }
-
+        
         public void AddHitboxes(int startFrame, Hitbox[] hitboxes)
         {
-            var index = GetIndexFromFrame(startFrame);
-            var hitboxKeyframe = new HitboxKeyframe
+            var index = GetIndex(startFrame);
+            var hitboxKeyframe = new HitboxKeyFrame
             {
                 StartFrame = startFrame,
                 Hitboxes = hitboxes
             };
             
-            if (_timeline == null)
+            if (_keyframes == null)
             {
-                _timeline = new[] {hitboxKeyframe};
+                _keyframes = new[] {hitboxKeyframe};
             }
-            else if (_timeline[index].StartFrame == startFrame)
+            else if (_keyframes[index].StartFrame == startFrame)
             {
-                _timeline[index].Hitboxes = hitboxKeyframe.Hitboxes;
+                _keyframes[index].Hitboxes = hitboxKeyframe.Hitboxes;
             }
             else 
             {
-                ArrayUtility.InsertAt(ref _timeline, index + 1, hitboxKeyframe);
+                ArrayUtility.InsertAt(ref _keyframes, index + 1, hitboxKeyframe);
             }
         }
 
         private Hitbox[] GetHitboxes(int frame)
         {
-            var index = GetIndexFromFrame(frame);
+            var index = GetIndex(frame);
             return index >= 0 
-                ? _timeline[index].Hitboxes 
+                ? _keyframes[index].Hitboxes 
                 : Array.Empty<Hitbox>();
         }
 
-        private int GetIndexFromFrame(int frame)
+        private int GetIndex(int frame)
         {
-            var loopedFrame = math.max(0, frame % Duration);
+            if (_keyframes == null) return -1;
+            if (frame < _keyframes[0].StartFrame) return -1;
 
-            if (_timeline == null) return -1;
-            if (loopedFrame < _timeline[0].StartFrame) return -1;
-
-            for (var timelineIndex = 0; timelineIndex < _timeline.Length - 1; timelineIndex++)
+            for (var timelineIndex = 0; timelineIndex < _keyframes.Length - 1; timelineIndex++)
             {
-                var startFrame = _timeline[timelineIndex].StartFrame;
-                var endFrame = _timeline[timelineIndex + 1].StartFrame;
-                if (loopedFrame >= startFrame && loopedFrame < endFrame)
+                var startFrame = _keyframes[timelineIndex].StartFrame;
+                var endFrame = _keyframes[timelineIndex + 1].StartFrame;
+                if (frame >= startFrame && frame < endFrame)
                 {
                     return timelineIndex;
                 }
             }
 
-            return _timeline.Length - 1;
+            return _keyframes.Length - 1;
         }
     }
 }

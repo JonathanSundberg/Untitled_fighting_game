@@ -26,13 +26,11 @@ public class LocalNetcodeTestManager : MonoBehaviour
         _gameState.Player1.Position = (Vector2) _p1Transform.position;
         _gameState.Player2.Position = (Vector2) _p2Transform.position;
 
-        _gameSynchronizer = new GameSynchronizer<GameState, InputState>
-        (
-            SaveGame, 
-            LoadGame,
-            SimulateGame,
-            BroadcastInput
-        );
+        _gameSynchronizer = new GameSynchronizer<GameState, InputState>();
+        _gameSynchronizer.SimulateGame += SimulateGame;
+        _gameSynchronizer.SaveGame += SaveGame; 
+        _gameSynchronizer.LoadGame += LoadGame;
+        _gameSynchronizer.BroadcastInput += BroadcastInput;
         
         _p1Handle = _gameSynchronizer.AddPlayer(PlayerType.Local);
         _p2Handle = _gameSynchronizer.AddPlayer(PlayerType.Remote);

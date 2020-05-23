@@ -73,7 +73,12 @@ public class NetplayGameManager : MonoBehaviour
         _lobby.ConnectNetwork();
         _lobby.NetworkMessageReceived += NetworkMessageReceived;
         
-        _synchronizer = new GameSynchronizer<GameState, InputState>(SaveGame, LoadGame, SimulateGame, BroadcastInput);
+        _synchronizer = new GameSynchronizer<GameState, InputState>();
+        _synchronizer.SimulateGame += SimulateGame;
+        _synchronizer.SaveGame += SaveGame; 
+        _synchronizer.LoadGame += LoadGame;
+        _synchronizer.BroadcastInput += BroadcastInput;
+        
         _remotePlayer = _synchronizer.AddPlayer(PlayerType.Remote);
         _localPlayer  = _synchronizer.AddPlayer(PlayerType.Local);
 
@@ -89,7 +94,12 @@ public class NetplayGameManager : MonoBehaviour
         _lobby.ConnectNetwork();
         _lobby.NetworkMessageReceived += NetworkMessageReceived;
         
-        _synchronizer = new GameSynchronizer<GameState, InputState>(SaveGame, LoadGame, SimulateGame, BroadcastInput);
+        _synchronizer = new GameSynchronizer<GameState, InputState>();
+        _synchronizer.SimulateGame += SimulateGame;
+        _synchronizer.SaveGame += SaveGame; 
+        _synchronizer.LoadGame += LoadGame;
+        _synchronizer.BroadcastInput += BroadcastInput;
+        
         _localPlayer  = _synchronizer.AddPlayer(PlayerType.Local);
         _remotePlayer = _synchronizer.AddPlayer(PlayerType.Remote);
     }

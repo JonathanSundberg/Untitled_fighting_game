@@ -7,33 +7,40 @@ namespace Logic
     public struct PlayerState
     {
         public readonly Character Character;
-        public InputStateBuffer InputBuffer;
+        public InputBuffer InputBuffer;
         
-        public int Health;
         public float2 Position;
-
         public float2 Velocity;
+        public float2 LookDirection;
+        public bool ReverseInputs => LookDirection.x < 0;
+        
+        public bool IsAirborne;
         public int AirOptions;
 
-        public int TimelineFrame;
-        public float2 LookDirection;
-        public bool IsAirborne;
+        public int ActionDuration;
+        public int ActiveAttack;
+        public int ActiveHits;
 
         public PlayerState(Character character, float2 position)
         {
             Character = character;
-            Position = position;
-            IsAirborne = position.y > 0;
             InputBuffer = default;
-            Health = 100;
+            
+            Position = position;
             Velocity = 0;
-            AirOptions = 2;
-            TimelineFrame = 0;
             LookDirection = 0;
-        }
-    }
 
-    public static class PlayerStateExtensions
-    {
+            IsAirborne = position.y > math.FLT_MIN_NORMAL;
+            AirOptions = 2;
+
+            ActiveAttack = -1;
+            ActionDuration = 0;
+            ActiveHits = 0;
+        }
+
+        public Attack GetActiveAttack()
+        {
+            return Character.GetAttack(ActiveAttack);
+        }
     }
 }

@@ -4,30 +4,21 @@ using UnityEngine;
 
 namespace Logic.Collision
 {
-    public enum HitboxType
+    [Flags]
+    public enum HitboxFlag
     {
-        Body,
-        High,
-        Mid,
-        Low
+        Hurt       = 0x01,
+        High       = 0x02,
+        Mid        = 0x04,
+        Low        = 0x08,
+        Projectile = 0x10,
     }
-    
+
     [Serializable]
     public struct Hitbox
     {
-        public HitboxType Type;
+        public HitboxFlag Flags;
         public Rect Rect;
-
-        public Hitbox(float x, float y, float w, float h)
-        {
-            Rect = new Rect
-            {
-                Position = {x = x, y = y},
-                Size = {x = w, y = h}
-            };
-
-            Type = HitboxType.Body;
-        }
     }
 
     public static class HitboxExtensions
@@ -38,31 +29,25 @@ namespace Logic.Collision
         private static readonly Color _midColor     = new Color(0.6f,  0.39f, 0.24f);
         private static readonly Color _lowColor     = new Color(0.6f,  0.54f, 0.24f);
 
-        public static Rect GetRect(this Hitbox hitbox, float2 positionOffset = default)
+        public static Rect GetRect(this Hitbox hitbox, PlayerState state)
         {
             var rect = hitbox.Rect;
-            rect.Position += positionOffset;
+            rect.Position *= state.LookDirection;
+            rect.Position += state.Position;
             return rect;
         }
 
-        public static void DebugDraw(this Hitbox hitbox, float2 position)
+        public static void DebugDraw(this Hitbox hitbox, PlayerState state)
         {
-            var center = hitbox.Rect.Position + position;
-            var size = hitbox.Rect.Size;
+            var rect = hitbox.GetRect(state);
 
-            Vector2 _00 = center + size * new float2(-0.5f, -0.5f);
-            Vector2 _01 = center + size * new float2(-0.5f,  0.5f);
-            Vector2 _10 = center + size * new float2( 0.5f, -0.5f);
-            Vector2 _11 = center + size * new float2( 0.5f,  0.5f);
+            Vector2 _00 = rect.Position + rect.Size * new float2(-0.5f,  0f);
+            Vector2 _01 = rect.Position + rect.Size * new float2(-0.5f,  1f);
+            Vector2 _10 = rect.Position + rect.Size * new float2( 0.5f,  0f);
+            Vector2 _11 = rect.Position + rect.Size * new float2( 0.5f,  1f);
 
-            var color =
-                hitbox.Type == HitboxType.Body ? _bodyColor :
-                hitbox.Type == HitboxType.High ? _highColor :
-                hitbox.Type == HitboxType.Mid  ? _midColor  :
-                hitbox.Type == HitboxType.Low  ? _lowColor  :
-                _defaultColor;
+            var color = (hitbox.Flags & HitboxFlag.Hurt) > 0 ? _bodyColor : _highColor;
 
-            
             Debug.DrawLine(_00, _01, color, 0, false);
             Debug.DrawLine(_11, _01, color, 0, false);
             Debug.DrawLine(_11, _10, color, 0, false);

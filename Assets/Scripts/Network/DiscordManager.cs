@@ -36,7 +36,7 @@ namespace Network
 
         private void OnApplicationQuit()
         {
-            _discord.Dispose();
+            _discord?.Dispose();
         }
     }
 }

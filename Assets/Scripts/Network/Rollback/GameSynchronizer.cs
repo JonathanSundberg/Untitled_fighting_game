@@ -19,10 +19,10 @@ namespace Network.Rollback
         public delegate void SimulateGameFn(TInputState[] inputStates);
         public delegate void BroadcastInputFn(PlayerHandle player, int frame, TInputState state);
 
-        private readonly SaveGameFn _saveGame;
-        private readonly LoadGameFn _loadGame;
-        private readonly SimulateGameFn _simulateGame;
-        private readonly BroadcastInputFn _broadcastInput;
+        public event SaveGameFn SaveGame;
+        public event LoadGameFn LoadGame;
+        public event SimulateGameFn SimulateGame;
+        public event BroadcastInputFn BroadcastInput;
         
         private readonly Mutex _rollbackMutex;
         private readonly List<Player<TInputState>> _players;
@@ -32,19 +32,8 @@ namespace Network.Rollback
         private int _currentFrame;
         private float _timeSpentOnFrame;
 
-        public GameSynchronizer
-        (
-            SaveGameFn saveGame,
-            LoadGameFn loadGame,
-            SimulateGameFn simulateGame,
-            BroadcastInputFn broadcastInput
-        )
+        public GameSynchronizer()
         {
-            _saveGame = saveGame;
-            _loadGame = loadGame;
-            _simulateGame = simulateGame;
-            _broadcastInput = broadcastInput;
-            
             _rollbackMutex = new Mutex();
             _players = new List<Player<TInputState>>();
             _savedStates = new RingBuffer<GameState>(Constants.FRAME_BUFFER_SIZE);
@@ -73,7 +62,7 @@ namespace Network.Rollback
                 Debug.Assert(stateIndex != -1, "Can't rollback to a discarded frame");
                 
                 var latestSynchronizedState = _savedStates[stateIndex];
-                _loadGame(latestSynchronizedState.State);
+                LoadGame(latestSynchronizedState.State);
 
                 var framesToResimulate = _currentFrame - latestSynchronizedFrame;
                 for (var frameIndex = 0; frameIndex < framesToResimulate; frameIndex++)
@@ -83,12 +72,12 @@ namespace Network.Rollback
                     {
                         _savedStates[resimulateFrame] = new GameState
                         {
-                            State = _saveGame(), 
+                            State = SaveGame(), 
                             Frame = resimulateFrame
                         };
                     }
 
-                    _simulateGame(GetInputs(resimulateFrame));
+                    SimulateGame(GetInputs(resimulateFrame));
                 }
             }
             
@@ -109,11 +98,11 @@ namespace Network.Rollback
             
             _savedStates[_currentFrame] = new GameState
             {
-                State = _saveGame(),
+                State = SaveGame(),
                 Frame = _currentFrame
             };
 
-            _simulateGame(GetInputs(_currentFrame));
+            SimulateGame(GetInputs(_currentFrame));
 
             _currentFrame++;
         }
@@ -159,7 +148,7 @@ namespace Network.Rollback
             Debug.Assert(playerHandle.Type == PlayerType.Local, "Only local players can use AddLocalInput");
             
             var inputAccepted = GetPlayer(playerHandle).AddInput(_currentFrame, inputState);
-            if (inputAccepted) _broadcastInput(playerHandle, _currentFrame, inputState);
+            if (inputAccepted) BroadcastInput?.Invoke(playerHandle, _currentFrame, inputState);
         }
         
         public void AddRemoteInput(PlayerHandle playerHandle, int frame, TInputState inputState)

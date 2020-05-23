@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98692947bb09487d8ab7aabbaf620a05, type: 3}
+  m_Name: 5A
+  m_EditorClassIdentifier: 
+  Motion: 5
+  Buttons: 1
+  Flags: 1
+  Level: 2
+  Force:
+    x: 0.24
+    y: 0.22
+  Hits: 0
+  Animation: {fileID: 11400000, guid: c067839368453de40953a61b705f2318, type: 2}

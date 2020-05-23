@@ -12,5 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25db5bf170bf4610887480f3030af3b0, type: 3}
   m_Name: Template Character
   m_EditorClassIdentifier: 
-  _attacks: []
-  _idleHitboxes: {fileID: 11400000, guid: f1f8a758a226d614187816d4b6f9b4c4, type: 2}
+  ForwardSpeed: 0.3
+  BackSpeed: 0.15
+  _attacks:
+  - {fileID: 11400000, guid: 0857ddd3c74fb3c4b8149a16aa82ffc6, type: 2}
+  - {fileID: 11400000, guid: 83e35141405d5cb4697ba808f8820cd6, type: 2}
+  _standingAnimation: {fileID: 11400000, guid: 368c434603af0144387a1531b3d5f8b4, type: 2}

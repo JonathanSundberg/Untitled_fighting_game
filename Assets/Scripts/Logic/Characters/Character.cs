@@ -1,123 +1,138 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
+﻿using System.Collections.Generic;
 using Logic.Collision;
 using Unity.Mathematics;
 using UnityEngine;
-using static Logic.Characters.MoveFlag;
 
 namespace Logic.Characters
 {
-
-    [Flags]
-    public enum Direction
-    {
-        Up    = 0x10,
-        Down  = 0x20,
-        Left  = 0x40,
-        Right = 0x80
-    }
-
-    [Flags]
-    public enum MoveFlag
-    {
-        Ground = 0x1,
-        Air    = 0x2
-    }
-    
-    [Serializable]
-    public struct Attack
-    {
-        public ushort Motion;
-        public Input _inputs;
-        public MoveFlag Flags;
-        public HitboxTimeline Hitboxes;
-
-        public Attack(ushort motion, Input inputs, MoveFlag flags, HitboxTimeline hitboxes)
-        {
-            Motion = motion;
-            _inputs = inputs;
-            Flags = flags;
-            Hitboxes = hitboxes;
-        }
-    }
-    
-    [CreateAssetMenu(menuName = "Settings/" + nameof(Character))]
+    [CreateAssetMenu(menuName = "Character/" + nameof(Character))]
     public class Character : ScriptableObject
     {
+        [SerializeField] private float ForwardSpeed;
+        [SerializeField] private float BackSpeed;
+        
         [SerializeField] private List<Attack> _attacks;
-        [SerializeField] private HitboxTimeline _idleHitboxes;
+        [SerializeField] private Animation _standingAnimation;
 
         public void UpdateState(ref PlayerState state)
         {
-            state.TimelineFrame++;
-            HandleInput(ref state);
+            state.ActionDuration++;
+            if (state.ActiveAttack >= 0)
+            {
+                var attackDuration = _attacks[state.ActiveAttack].Duration;
+                if (state.ActionDuration >= attackDuration)
+                {
+                    state.ActiveAttack = -1;
+                }
+            }
+            else
+            {
+                HandleInput(ref state);
+            }
+            
             UpdatePosition(ref state);
+        }
+        
+        private void HandleInput(ref PlayerState state)
+        {
+            for (var attackIndex = 0; attackIndex < _attacks.Count; attackIndex++)
+            {
+                var attack = _attacks[attackIndex];
+                if (!state.InputBuffer.GetButtonPress(attack.Buttons)
+                 || !state.InputBuffer.ContainsMotion(attack.Motion, state.ReverseInputs)) continue;
+                
+                state.ActiveAttack = attackIndex;
+                state.ActiveHits = attack.Hits;
+                state.ActionDuration = 0;
+
+                break;
+            }
+
+            if (state.ActiveAttack != -1) return;
+
+            if (state.AirOptions > 0)
+            {
+                if (state.InputBuffer.GetDirectionPress(Direction.Up))
+                {
+                    state.AirOptions--;
+                    state.Velocity.y = 0.7f;
+                
+                    if (state.InputBuffer.GetDirection(Direction.Left))
+                    {
+                        state.Velocity.x = -0.5f;
+                    }
+                
+                    if (state.InputBuffer.GetDirection(Direction.Right))
+                    {
+                        state.Velocity.x = 0.5f;
+                    }
+                }
+
+                var forward = state.ReverseInputs ? Direction.Left : Direction.Right;
+                
+                if (state.IsAirborne 
+                 && state.AirOptions > 0
+                 && state.InputBuffer.GetDirectionPress(forward) 
+                 && state.InputBuffer.ContainsMotion(656, state.ReverseInputs))
+                {
+                    state.AirOptions--;
+                    state.Velocity.x = state.ReverseInputs ? -1 : 1;
+                    state.Velocity.y = 0.3f;
+                }
+            }
+
+            if (!state.IsAirborne)
+            {
+                if (state.InputBuffer.GetDirection(Direction.Left))
+                {
+                    state.Velocity.x = -(state.ReverseInputs ? ForwardSpeed : BackSpeed);
+                }
+
+                if (state.InputBuffer.GetDirection(Direction.Right))
+                {
+                    state.Velocity.x = state.ReverseInputs ? BackSpeed : ForwardSpeed;
+                }
+            }
         }
 
         private void UpdatePosition(ref PlayerState state)
         {
             if (!state.IsAirborne)
             {
-                state.Velocity.x *= 0.9f;
+                state.Velocity.x *= 0.8f;
             }
 
-            if (state.Position.y > 0)
+            if (state.Position.y > math.FLT_MIN_NORMAL)
             {
                 state.Velocity.y -= 0.05f;
                 state.IsAirborne = true;
             }
-            else if (state.Position.y < 0)
+            else if (state.IsAirborne)
             {
                 state.IsAirborne = false;
+                state.ActiveAttack = -1;
+                state.ActionDuration = 0;
                 state.AirOptions = 2;
                 state.Velocity.y = 0;
                 state.Position.y = 0;
             }
 
-            state.Velocity.x = math.clamp(state.Velocity.x, -1, 1);
             state.Position += state.Velocity;
         }
 
-        private void HandleInput(ref PlayerState state)
+        public Hitbox[] GetHitboxes(PlayerState state)
         {
-            var currentInput = state.InputBuffer.Current;
-            var previousInput = state.InputBuffer.Previous;
-            
-            if (state.AirOptions > 0 
-            && currentInput.HasInput(Input.Up) 
-            && !previousInput.HasInput(Input.Up))
+            if (state.ActiveAttack < 0)
             {
-                if (currentInput.HasInput(Input.Left))
-                {
-                    state.Velocity.x -= 0.5f;
-                }
-                else if (currentInput.HasInput(Input.Right))
-                {
-                    state.Velocity.x += 0.5f;
-                }
-                
-                state.Velocity.y += 0.7f;
-                state.AirOptions--;
+                return _standingAnimation.Hitboxes[state.ActionDuration % _standingAnimation.Duration];
             }
 
-            if (!state.IsAirborne)
-            {
-                if (currentInput.HasInput(Input.Left))
-                {
-                    state.Velocity.x -= 0.5f;
-                }
-
-                if (currentInput.HasInput(Input.Right))
-                {
-                    state.Velocity.x += 0.5f;
-                }
-            }
+            return _attacks[state.ActiveAttack].Animation.Hitboxes[state.ActionDuration];
         }
 
-        public Hitbox[] GetHitboxes(PlayerState playerStateHandle)
+        public Attack GetAttack(int index)
         {
-            return _idleHitboxes[playerStateHandle.TimelineFrame];
+            return _attacks[index];
         }
     }
 }
