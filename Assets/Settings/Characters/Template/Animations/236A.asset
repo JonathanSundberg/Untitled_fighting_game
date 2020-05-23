@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bed7d5559c17408c87a3ab42e8d3db1a, type: 3}
-  m_Name: Standing 1
+  m_Name: 236A
   m_EditorClassIdentifier: 
-  Duration: 120
+  Duration: 40
   Hitboxes:
     _keyframes:
     - StartFrame: 0
@@ -33,7 +33,7 @@ MonoBehaviour:
           Size:
             x: 3
             y: 3
-    - StartFrame: 80
+    - StartFrame: 5
       Hitboxes:
       - Flags: 1
         Rect:
@@ -43,7 +43,7 @@ MonoBehaviour:
           Size:
             x: 5
             y: 8
-      - Flags: 1
+      - Flags: 4
         Rect:
           Position:
             x: 0

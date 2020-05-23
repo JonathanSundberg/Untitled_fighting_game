@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: 5A
   m_EditorClassIdentifier: 
   Motion: 5
-  Buttons: 1
+  Buttons: 16
   Flags: 1
   Level: 2
   Force:
-    x: 0.24
-    y: 0.22
-  Hits: 0
-  Animation: {fileID: 11400000, guid: c067839368453de40953a61b705f2318, type: 2}
+    x: 0.14
+    y: 0.64
+  Hits: 1
+  Animation: {fileID: 11400000, guid: 9b0b2df8649d5454595ed41db5034160, type: 2}
