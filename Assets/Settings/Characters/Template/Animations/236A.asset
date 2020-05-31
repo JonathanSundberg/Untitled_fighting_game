@@ -12,42 +12,40 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bed7d5559c17408c87a3ab42e8d3db1a, type: 3}
   m_Name: 236A
   m_EditorClassIdentifier: 
-  Duration: 40
+  Duration: 30
   Hitboxes:
     _keyframes:
-    - StartFrame: 0
+    - Frame: 5
       Hitboxes:
-      - Flags: 1
-        Rect:
-          Position:
-            x: 0
-            y: 0
-          Size:
-            x: 5
-            y: 8
-      - Flags: 1
-        Rect:
-          Position:
-            x: 0
-            y: 9
-          Size:
-            x: 3
-            y: 3
-    - StartFrame: 5
+      - Type: 1
+        Position:
+          x: 106
+          y: 17
+        Size:
+          x: 1128
+          y: 1815
+    - Frame: 10
       Hitboxes:
-      - Flags: 1
-        Rect:
-          Position:
-            x: 0
-            y: 0
-          Size:
-            x: 5
-            y: 8
-      - Flags: 4
-        Rect:
-          Position:
-            x: 0
-            y: 8
-          Size:
-            x: 3
-            y: 3
+      - Type: 1
+        Position:
+          x: 106
+          y: 17
+        Size:
+          x: 1128
+          y: 1815
+      - Type: 1
+        Position:
+          x: 583
+          y: 1303
+        Size:
+          x: 1015
+          y: 1092
+    - Frame: 15
+      Hitboxes:
+      - Type: 0
+        Position:
+          x: 106
+          y: 17
+        Size:
+          x: 1128
+          y: 1815
