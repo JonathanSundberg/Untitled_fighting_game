@@ -38,6 +38,7 @@ namespace Logic.Characters
         
         private void HandleInput(ref PlayerState state)
         {
+            // handle special inputs
             for (var specialIndex = 0; specialIndex < _specials.Count; specialIndex++)
             {
                 var special = _specials[specialIndex];
@@ -50,7 +51,7 @@ namespace Logic.Characters
 
                 return;
             }
-            
+            // handle normal inputs
             for (var normalIndex = 0; normalIndex < _normals.Count; normalIndex++)
             {
                 var normal = _normals[normalIndex];
@@ -65,7 +66,7 @@ namespace Logic.Characters
 
                 return;
             }
-
+            // handle air options
             if (state.AirOptions > 0)
             {
                 if (state.InputBuffer.GetDirectionPress(Direction.Up))
@@ -96,7 +97,7 @@ namespace Logic.Characters
                     state.IgnoreGravity = AirDashDuration;
                 }
             }
-
+            // handle grounded options
             if (!state.IsAirborne)
             {
                 if (state.InputBuffer.GetDirection(Direction.Left))
