@@ -62,9 +62,9 @@ public class playercontroller : MonoBehaviour
     private void OnRight(InputAction.CallbackContext value)
     {
         Debug.Log("Right!");
-        //var input = value.ReadValue<float>();
-        //Debug.Log(input);
-        //movement.movement_dir.x = input ;
+        var input = value.ReadValue<float>();
+        Debug.Log(input);
+        movement.movement_dir.x = input ;
     }
 
 
