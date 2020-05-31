@@ -12,42 +12,159 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bed7d5559c17408c87a3ab42e8d3db1a, type: 3}
   m_Name: Standing
   m_EditorClassIdentifier: 
-  Duration: 120
+  Duration: 73
   Hitboxes:
     _keyframes:
     - Frame: 0
       Hitboxes:
-      - Layer: 0
-        LayerMask: 0
+      - Type: 0
         Position:
           x: 0
-          y: 0
+          y: 510
         Size:
-          x: 0
-          y: 0
-      - Layer: 0
-        LayerMask: 0
+          x: 503
+          y: 989
+      - Type: 0
         Position:
-          x: 0
+          x: 73
+          y: 1547
+        Size:
+          x: 372
+          y: 417
+      - Type: 0
+        Position:
+          x: -6
+          y: 1177
+        Size:
+          x: 232
+          y: 210
+      - Type: 0
+        Position:
+          x: 322
+          y: 1083
+        Size:
+          x: 644
+          y: 122
+      - Type: 0
+        Position:
+          x: 431
+          y: 996
+        Size:
+          x: 304
+          y: 128
+      - Type: 0
+        Position:
+          x: -175
           y: 0
         Size:
-          x: 0
-          y: 0
-    - Frame: 80
+          x: 150
+          y: 500
+      - Type: 0
+        Position:
+          x: 173
+          y: 3
+        Size:
+          x: 150
+          y: 500
+    - Frame: 29
       Hitboxes:
-      - Layer: 0
-        LayerMask: 0
+      - Type: 0
         Position:
           x: 0
+          y: 510
+        Size:
+          x: 503
+          y: 989
+      - Type: 0
+        Position:
+          x: 76
+          y: 1531
+        Size:
+          x: 372
+          y: 417
+      - Type: 0
+        Position:
+          x: -5
+          y: 1171
+        Size:
+          x: 232
+          y: 210
+      - Type: 0
+        Position:
+          x: 314
+          y: 1096
+        Size:
+          x: 644
+          y: 122
+      - Type: 0
+        Position:
+          x: 431
+          y: 996
+        Size:
+          x: 304
+          y: 128
+      - Type: 0
+        Position:
+          x: -175
           y: 0
         Size:
-          x: 0
-          y: 0
-      - Layer: 0
-        LayerMask: 0
+          x: 150
+          y: 500
+      - Type: 0
+        Position:
+          x: 173
+          y: 3
+        Size:
+          x: 150
+          y: 500
+    - Frame: 55
+      Hitboxes:
+      - Type: 0
         Position:
           x: 0
+          y: 510
+        Size:
+          x: 503
+          y: 989
+      - Type: 0
+        Position:
+          x: 64
+          y: 1551
+        Size:
+          x: 372
+          y: 417
+      - Type: 0
+        Position:
+          x: -8
+          y: 1168
+        Size:
+          x: 232
+          y: 210
+      - Type: 0
+        Position:
+          x: 295
+          y: 1112
+        Size:
+          x: 644
+          y: 122
+      - Type: 0
+        Position:
+          x: 419
+          y: 1041
+        Size:
+          x: 304
+          y: 128
+      - Type: 0
+        Position:
+          x: -175
           y: 0
         Size:
-          x: 0
-          y: 0
+          x: 150
+          y: 500
+      - Type: 0
+        Position:
+          x: 173
+          y: 3
+        Size:
+          x: 150
+          y: 500

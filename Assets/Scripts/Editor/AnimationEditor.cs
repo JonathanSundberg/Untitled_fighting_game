@@ -99,17 +99,7 @@ namespace Editor
             _durationInput.RegisterValueChangedCallback(evt =>
             {
                 var newValue = math.max(1, evt.newValue);
-                
-                _durationInput.SetValueWithoutNotify(newValue);
-                _frameSlider.highValue = newValue;
-                _animation.Duration = newValue;
-
-                if (_frameSlider.value > newValue)
-                {
-                    SetActiveFrame(newValue);
-                }
-                
-                RebuildKeyframeDots();
+                SetDuration(newValue);
             });
             
             _scaleSlider.RegisterValueChangedCallback(evt =>
@@ -117,35 +107,63 @@ namespace Editor
                 SetActiveFrame(SelectedFrame);
             });
 
-            _addKeyframe.clicked += () =>
+            _addKeyframe.clicked += AddKeyframe;
+            _removeKeyframe.clicked += RemoveKeyframe;
+            _addHitbox.clicked += AddHitbox;
+        }
+
+        private void SetDuration(int newValue)
+        {
+            _durationInput.SetValueWithoutNotify(newValue);
+            _frameSlider.highValue = newValue;
+            _animation.Duration = newValue;
+
+            if (_frameSlider.value > newValue)
             {
-                _animation.Hitboxes.AddKeyframe(SelectedFrame);
-                SetActiveFrame(SelectedFrame);
-                RebuildKeyframeDots();
-            };
+                SetActiveFrame(newValue);
+            }
+
+            RebuildKeyframeDots();
             
-            _removeKeyframe.clicked += () =>
-            {
-                _animation.Hitboxes.RemoveKeyframe(SelectedFrame);
-                SetActiveFrame(SelectedFrame);
-                RebuildKeyframeDots();
-            };
+            EditorUtility.SetDirty(_animation);
+        }
+
+        private void AddKeyframe()
+        {
+            _animation.Hitboxes.AddKeyframe(SelectedFrame);
+            SetActiveFrame(SelectedFrame);
+            RebuildKeyframeDots();
             
-            _addHitbox.clicked += () =>
-            {
-                _animation.Hitboxes.AddHitbox(SelectedFrame, new Hitbox
+            EditorUtility.SetDirty(_animation);
+        }
+
+        private void RemoveKeyframe()
+        {
+            _animation.Hitboxes.RemoveKeyframe(SelectedFrame);
+            SetActiveFrame(SelectedFrame);
+            RebuildKeyframeDots();
+            
+            EditorUtility.SetDirty(_animation);
+        }
+
+        private void AddHitbox()
+        {
+            _animation.Hitboxes.AddHitbox
+            (
+                SelectedFrame,
+                new Hitbox
                 {
                     Type = HitboxType.Attack,
                     Position = 0,
                     Size = 500
-                });
-                
-                SetActiveFrame(SelectedFrame);
-            };
+                }
+            );
 
-
+            SetActiveFrame(SelectedFrame);
+            
+            EditorUtility.SetDirty(_animation);
         }
-        
+
         private void SetupContextMenuElements()
         {
             _contextMenu = rootVisualElement.Q<VisualElement>("context-menu");
@@ -197,7 +215,6 @@ namespace Editor
             SetActiveFrame(_frameInput.value);
         }
 
-        
         private void SetActiveFrame(int frame)
         {
             frame = math.clamp(frame, 0, _animation.Duration);
@@ -341,6 +358,7 @@ namespace Editor
                     hitbox.Position = (int2) (position * scale);
 
                     _animation.Hitboxes.SetHitbox(keyframeIndex, hitboxIndex, hitbox);
+                    EditorUtility.SetDirty(_animation);
 
                     var mousePosition = (float2) e.localMousePosition;
                     if (math.all(mousePosition < 0) 

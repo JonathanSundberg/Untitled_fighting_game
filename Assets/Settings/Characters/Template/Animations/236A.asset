@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bed7d5559c17408c87a3ab42e8d3db1a, type: 3}
   m_Name: 236A
   m_EditorClassIdentifier: 
-  Duration: 30
+  Duration: 31
   Hitboxes:
     _keyframes:
     - Frame: 5
