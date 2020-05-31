@@ -8,18 +8,23 @@ namespace Logic.Characters
     [CreateAssetMenu(menuName = "Character/" + nameof(Character))]
     public class Character : ScriptableObject
     {
-        [SerializeField] private float ForwardSpeed;
-        [SerializeField] private float BackSpeed;
+        [SerializeField] private int ForwardSpeed;
+        [SerializeField] private int BackSpeed;
+        [SerializeField] public int GroundDrag;
+        [SerializeField] private int2 JumpForce;
+        [SerializeField] private int2 AirDashForce;
+        [SerializeField] private int AirDashDuration;
         
-        [SerializeField] private List<Attack> _attacks;
         [SerializeField] private Animation _standingAnimation;
+        [SerializeField] private List<Attack> _normals;
+        [SerializeField] private List<Attack> _specials;
 
         public void UpdateState(ref PlayerState state)
         {
             state.ActionDuration++;
             if (state.ActiveAttack >= 0)
             {
-                var attackDuration = _attacks[state.ActiveAttack].Duration;
+                var attackDuration = _specials[state.ActiveAttack].Duration;
                 if (state.ActionDuration >= attackDuration)
                 {
                     state.ActiveAttack = -1;
@@ -29,42 +34,53 @@ namespace Logic.Characters
             {
                 HandleInput(ref state);
             }
-            
-            UpdatePosition(ref state);
         }
         
         private void HandleInput(ref PlayerState state)
         {
-            for (var attackIndex = 0; attackIndex < _attacks.Count; attackIndex++)
+            for (var specialIndex = 0; specialIndex < _specials.Count; specialIndex++)
             {
-                var attack = _attacks[attackIndex];
-                if (!state.InputBuffer.GetButtonPress(attack.Buttons)
-                 || !state.InputBuffer.ContainsMotion(attack.Motion, state.ReverseInputs)) continue;
+                var special = _specials[specialIndex];
+                if (!state.InputBuffer.GetButtonPress(special.Buttons)
+                 || !state.InputBuffer.ContainsMotion(special.Motion, state.ReverseInputs)) continue;
                 
-                state.ActiveAttack = attackIndex;
-                state.ActiveHits = attack.Hits;
+                state.ActiveAttack = specialIndex;
+                state.ActiveHits = special.Hits;
                 state.ActionDuration = 0;
 
-                break;
+                return;
             }
+            
+            for (var normalIndex = 0; normalIndex < _normals.Count; normalIndex++)
+            {
+                var normal = _normals[normalIndex];
+                var direction = normal.Motion.ToDirection(state.ReverseInputs);
+                
+                if (!state.InputBuffer.GetButtonPress(normal.Buttons)
+                 || !state.InputBuffer.GetDirection(direction)) continue;
+                
+                state.ActiveAttack = normalIndex;
+                state.ActiveHits = normal.Hits;
+                state.ActionDuration = 0;
 
-            if (state.ActiveAttack != -1) return;
+                return;
+            }
 
             if (state.AirOptions > 0)
             {
                 if (state.InputBuffer.GetDirectionPress(Direction.Up))
                 {
                     state.AirOptions--;
-                    state.Velocity.y = 0.7f;
+                    state.Velocity.y = JumpForce.y;
                 
                     if (state.InputBuffer.GetDirection(Direction.Left))
                     {
-                        state.Velocity.x = -0.5f;
+                        state.Velocity.x = -JumpForce.x;
                     }
                 
                     if (state.InputBuffer.GetDirection(Direction.Right))
                     {
-                        state.Velocity.x = 0.5f;
+                        state.Velocity.x = JumpForce.x;
                     }
                 }
 
@@ -76,8 +92,8 @@ namespace Logic.Characters
                  && state.InputBuffer.ContainsMotion(656, state.ReverseInputs))
                 {
                     state.AirOptions--;
-                    state.Velocity.x = state.ReverseInputs ? -1 : 1;
-                    state.Velocity.y = 0.3f;
+                    state.Velocity = AirDashForce * state.LookDirection;
+                    state.IgnoreGravity = AirDashDuration;
                 }
             }
 
@@ -95,31 +111,6 @@ namespace Logic.Characters
             }
         }
 
-        private void UpdatePosition(ref PlayerState state)
-        {
-            if (!state.IsAirborne)
-            {
-                state.Velocity.x *= 0.8f;
-            }
-
-            if (state.Position.y > math.FLT_MIN_NORMAL)
-            {
-                state.Velocity.y -= 0.05f;
-                state.IsAirborne = true;
-            }
-            else if (state.IsAirborne)
-            {
-                state.IsAirborne = false;
-                state.ActiveAttack = -1;
-                state.ActionDuration = 0;
-                state.AirOptions = 2;
-                state.Velocity.y = 0;
-                state.Position.y = 0;
-            }
-
-            state.Position += state.Velocity;
-        }
-
         public Hitbox[] GetHitboxes(PlayerState state)
         {
             if (state.ActiveAttack < 0)
@@ -127,12 +118,12 @@ namespace Logic.Characters
                 return _standingAnimation.Hitboxes[state.ActionDuration % _standingAnimation.Duration];
             }
 
-            return _attacks[state.ActiveAttack].Animation.Hitboxes[state.ActionDuration];
+            return _specials[state.ActiveAttack].Animation.Hitboxes[state.ActionDuration];
         }
 
         public Attack GetAttack(int index)
         {
-            return _attacks[index];
+            return _specials[index];
         }
     }
 }

@@ -18,7 +18,7 @@ namespace Logic.Characters
         public Button Buttons;
         public AttackFlag Flags;
         [Range(0, 5)] public int Level;
-        public float2 Force;
+        public int2 Force;
         public int Hits;
         public Animation Animation;
 

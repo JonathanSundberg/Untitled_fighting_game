@@ -1,10 +1,16 @@
-﻿using Logic.Collision;
+﻿using System;
+using Logic.Collision;
+using Logic.Game;
 using Unity.Mathematics;
+using UnityEngine;
 
 namespace Logic
 {
+    [Serializable]
     public struct GameState
     {
+        public GameSettings GameSettings;
+        
         public PlayerState Player1;
         public PlayerState Player2;
 
@@ -14,33 +20,81 @@ namespace Logic
             Player2.InputBuffer.AddInput(player2Input);
             
             var direction = (int) math.sign(Player2.Position.x - Player1.Position.x);
-            Player1.LookDirection = new float2( direction, 1);
-            Player2.LookDirection = new float2(-direction, 1);
+            Player1.LookDirection = new int2( direction, 1);
+            Player2.LookDirection = new int2(-direction, 1);
 
             Player1.Character.UpdateState(ref Player1);
             Player2.Character.UpdateState(ref Player2);
             
             CheckCollisions();
+
+            SimulatePhysics(Player1);
+            SimulatePhysics(Player2);
         }
-        
+
+        private void SimulatePhysics(PlayerState player)
+        {
+            if (!player.IsAirborne)
+            {
+                var speed = math.abs(player.Velocity.x);
+                var sign = (int) math.sign(player.Velocity.x);
+                player.Velocity.x -= math.min(speed, player.Character.GroundDrag) * sign;
+            }
+
+            if (player.Position.y > 0)
+            {
+                if (player.IgnoreGravity > 0)
+                {
+                    player.IgnoreGravity--;
+                }
+                else
+                {
+                    player.Velocity.y -= GameSettings.Gravity;
+                }
+
+                player.IsAirborne = true;
+            }
+            else if (player.IsAirborne)
+            {
+                player.IsAirborne = false;
+                player.ActiveAttack = -1;
+                player.ActionDuration = 0;
+                player.AirOptions = 2;
+                player.Velocity.y = 0;
+                player.Position.y = 0;
+            }
+
+            player.Position += player.Velocity;
+            player.Position.x = math.clamp
+            (
+                player.Position.x,
+                -GameSettings.StageHalfSize,
+                GameSettings.StageHalfSize
+            );
+        }
+
         private void CheckCollisions()
         {
-            var p1Hitboxes = Player1.Character.GetHitboxes(Player1);
-            var p2Hitboxes = Player2.Character.GetHitboxes(Player2);
+            var p1Hitboxes = Player1.GetHitboxes();
+            var p2Hitboxes = Player2.GetHitboxes();
 
             foreach (var p1Hitbox in p1Hitboxes)
             foreach (var p2Hitbox in p2Hitboxes)
             {
-                var p1Rect = p1Hitbox.GetRect(Player1);
-                var p2Rect = p2Hitbox.GetRect(Player2);
-                if (!p1Rect.Intersects(p2Rect)) continue;
-                
-                if (Player1.ActiveHits > 0
-                 && (p1Hitbox.Flags & ~HitboxFlag.Hurt) != 0
-                 && (p2Hitbox.Flags & HitboxFlag.Hurt) != 0)
+                if (!p1Hitbox.Intersects(p2Hitbox)) continue;
+
+                if (Player1.ActiveHits > 0 
+                 && p1Hitbox.CheckCollisionType(p2Hitbox) == CollisionType.Hit)
                 {
-                    Player2.Velocity += Player1.GetActiveAttack().Force * Player1.LookDirection;
                     Player1.ActiveHits--;
+                    Player2.Velocity = Player1.GetActiveAttack().Force * Player1.LookDirection;
+                }
+
+                if (Player2.ActiveHits > 0 
+                 && p2Hitbox.CheckCollisionType(p1Hitbox) == CollisionType.Hit)
+                {
+                    Player2.ActiveHits--;
+                    Player1.Velocity = Player2.GetActiveAttack().Force * Player2.LookDirection;
                 }
             }
         }
@@ -50,14 +104,15 @@ namespace Logic
     {
         public static void DrawHitboxes(this GameState gameState)
         {
-            foreach (var hitbox in gameState.Player1.Character.GetHitboxes(gameState.Player1))
-            {
-                hitbox.DebugDraw(gameState.Player1);
-            }
-            foreach (var hitbox in gameState.Player2.Character.GetHitboxes(gameState.Player2))
-            {
-                hitbox.DebugDraw(gameState.Player2);
-            }
+            Debug.DrawLine
+            (
+                new Vector3(-gameState.GameSettings.StageHalfSize, 0, 0),
+                new Vector3(gameState.GameSettings.StageHalfSize, 0, 0),
+                Color.white, 0
+            );
+            
+            foreach (var hitbox in gameState.Player1.GetHitboxes()) { hitbox.DebugDraw(); }
+            foreach (var hitbox in gameState.Player2.GetHitboxes()) { hitbox.DebugDraw(); }
         }
     }
 }

@@ -17,7 +17,7 @@ MonoBehaviour:
   Flags: 1
   Level: 2
   Force:
-    x: 0.14
-    y: 0.64
+    x: 0
+    y: 0
   Hits: 1
   Animation: {fileID: 11400000, guid: 9b0b2df8649d5454595ed41db5034160, type: 2}

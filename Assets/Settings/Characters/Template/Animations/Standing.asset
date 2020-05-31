@@ -15,39 +15,39 @@ MonoBehaviour:
   Duration: 120
   Hitboxes:
     _keyframes:
-    - StartFrame: 0
+    - Frame: 0
       Hitboxes:
-      - Flags: 1
-        Rect:
-          Position:
-            x: 0
-            y: 0
-          Size:
-            x: 5
-            y: 8
-      - Flags: 1
-        Rect:
-          Position:
-            x: 0
-            y: 9
-          Size:
-            x: 3
-            y: 3
-    - StartFrame: 80
+      - Layer: 0
+        LayerMask: 0
+        Position:
+          x: 0
+          y: 0
+        Size:
+          x: 0
+          y: 0
+      - Layer: 0
+        LayerMask: 0
+        Position:
+          x: 0
+          y: 0
+        Size:
+          x: 0
+          y: 0
+    - Frame: 80
       Hitboxes:
-      - Flags: 1
-        Rect:
-          Position:
-            x: 0
-            y: 0
-          Size:
-            x: 5
-            y: 8
-      - Flags: 1
-        Rect:
-          Position:
-            x: 0
-            y: 8
-          Size:
-            x: 3
-            y: 3
+      - Layer: 0
+        LayerMask: 0
+        Position:
+          x: 0
+          y: 0
+        Size:
+          x: 0
+          y: 0
+      - Layer: 0
+        LayerMask: 0
+        Position:
+          x: 0
+          y: 0
+        Size:
+          x: 0
+          y: 0

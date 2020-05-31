@@ -1,4 +1,0 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
-    <uie:EnumField label="Type" value="Center" />
-    <uie:RectField label="Rect" />
-</ui:UXML>

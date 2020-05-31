@@ -1,0 +1,10 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement name="context-menu" style="background-color: rgb(182, 182, 182); border-left-color: rgb(126, 126, 126); border-right-color: rgb(126, 126, 126); border-top-color: rgb(126, 126, 126); border-bottom-color: rgb(126, 126, 126); border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px; border-top-left-radius: 2px; border-bottom-left-radius: 2px; border-top-right-radius: 2px; border-bottom-right-radius: 2px; padding-left: 0; padding-right: 0; padding-top: 2px; padding-bottom: 2px;">
+        <uie:EnumField type="Logic.Collision.HitboxType, Assembly-CSharp" name="type-enum" />
+        <uie:IntegerField label="X" value="42" name="x-field" />
+        <uie:IntegerField label="Y" value="42" name="y-field" />
+        <uie:IntegerField label="W" value="42" name="w-field" />
+        <uie:IntegerField label="H" value="42" name="h-field" />
+        <ui:Button text="Delete" name="delete-button" />
+    </ui:VisualElement>
+</ui:UXML>

@@ -41,9 +41,7 @@ public class NetplayGameManager : MonoBehaviour
     private PlayerHandle _remotePlayer;
     private uint _pingPackageId;
 
-    [SerializeField] private Character _player1Character;
     [SerializeField] private Transform _player1Transform;
-    [SerializeField] private Character _player2Character;
     [SerializeField] private Transform _player2Transform;
 
     private void Awake()
@@ -59,8 +57,6 @@ public class NetplayGameManager : MonoBehaviour
 
     private void Start()
     {
-        _gameState.Player1 = new PlayerState(_player1Character, (Vector2) _player1Transform.position);
-        _gameState.Player2 = new PlayerState(_player2Character, (Vector2) _player2Transform.position);
     }
 
     public static void JoinMatch(DiscordLobby lobby) => _instance.JoinMatchInternal(lobby);
@@ -115,8 +111,8 @@ public class NetplayGameManager : MonoBehaviour
         _synchronizer.AddLocalInput(_localPlayer, InputState.ReadLocalInputs());
         _synchronizer.Update(Time.deltaTime * 1000);
         
-        _player1Transform.position = (Vector2) _gameState.Player1.Position;
-        _player2Transform.position = (Vector2) _gameState.Player2.Position;
+        _player1Transform.position = new Vector2(_gameState.Player1.Position.x, _gameState.Player1.Position.y);
+        _player2Transform.position = new Vector2(_gameState.Player2.Position.x, _gameState.Player2.Position.y);
         
         _gameState.DrawHitboxes();
     }

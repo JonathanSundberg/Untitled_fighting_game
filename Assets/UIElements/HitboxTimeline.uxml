@@ -1,21 +1,43 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
-    <ui:VisualElement name="root" style="flex-direction: column; flex-grow: 1;">
+    <ui:VisualElement name="root" style="flex-direction: column; flex-grow: 1; height: 100%;">
         <Style src="HitboxTimeline.uss" />
         <ui:VisualElement name="controlls" style="flex-grow: 0;">
+            <uie:ObjectField label="Animation" type="Logic.Characters.Animation, Assembly-CSharp" name="animation-field" />
             <ui:VisualElement name="frame-controlls" style="flex-direction: row;">
-                <ui:Label text="Frame" style="margin-left: 10px; margin-right: 5px; -unity-text-align: middle-left;" />
-                <uie:IntegerField value="0" name="frame-input" style="width: 45px; margin-right: 10px; margin-left: 5px;" />
-                <ui:SliderInt picking-mode="Ignore" value="15" high-value="40" style="flex-grow: 1;" />
-                <ui:Label text="Duration" style="margin-left: 10px; margin-right: 5px; -unity-text-align: middle-left;" />
-                <uie:IntegerField value="40" name="duration-input" style="width: 45px; margin-right: 10px; margin-left: 5px;" />
+                <uie:IntegerField value="0" name="frame-input" label="Frame" style="margin-right: 10px; margin-left: 5px; width: 83px;" />
+                <ui:VisualElement style="flex-grow: 1;">
+                    <ui:VisualElement name="keyframe-parent" class="keyframe_dot" style="left: 8px; right: 8px; position: absolute;">
+                        <ui:VisualElement class="keyframe-dot" />
+                    </ui:VisualElement>
+                    <ui:SliderInt picking-mode="Ignore" high-value="40" name="frame-slider" style="flex-grow: 1;" />
+                </ui:VisualElement>
+                <uie:IntegerField value="40" name="duration-input" label="Duration" style="width: 96px; margin-right: 10px; margin-left: 5px;" />
             </ui:VisualElement>
             <ui:VisualElement style="flex-direction: row;">
-                <ui:Button text="Add Keyframe" style="flex-shrink: 0;" />
-                <ui:Button text="Remove Keyframe" style="flex-shrink: 0;" />
+                <ui:Button text="Add Keyframe" name="add-keyframe" style="flex-shrink: 0;" />
+                <ui:Button text="Remove Keyframe" name="remove-keyframe" style="flex-shrink: 0;" />
+                <ui:Button text="Add Hitbox" name="add-hitbox" style="flex-shrink: 0;" />
+                <ui:VisualElement style="flex-grow: 1;" />
+                <ui:Toggle />
+                <ui:Label text="Show Previous Frame" style="margin-left: 0;" />
             </ui:VisualElement>
         </ui:VisualElement>
-        <ui:VisualElement name="preview-root" style="background-color: rgba(0, 0, 0, 0.1); flex-grow: 1; border-left-width: 0; border-right-width: 0; border-top-width: 2px; border-bottom-width: 0; border-left-color: rgba(0, 0, 0, 0.2); border-right-color: rgba(0, 0, 0, 0.2); border-top-color: rgba(0, 0, 0, 0.2); border-bottom-color: rgba(0, 0, 0, 0.2); align-items: center; justify-content: flex-end;">
-            <ui:VisualElement class="hitbox hurt" style="bottom: 0; left: 0; width: 100px; height: 200px;" />
+        <ui:VisualElement name="preview-root" style="background-color: rgba(0, 0, 0, 0.5); align-items: center; justify-content: flex-end; overflow: hidden; flex-grow: 1;">
+            <ui:VisualElement name="hitbox-parent">
+                <ui:VisualElement class="hitbox hitbox-body" style="width: 108px; height: 180.8px; bottom: 94px; left: -100px;" />
+                <ui:VisualElement class="hitbox-attack hitbox" style="width: 108px; height: 180.8px; bottom: 46px; left: -36px;" />
+            </ui:VisualElement>
+            <ui:VisualElement name="context-menu-parent" style="position: absolute; left: 0; top: 0;">
+                <ui:VisualElement name="context-menu" style="left: 200px; top: 200px; font-size: 12px; background-color: rgb(182, 182, 182); width: 100px; border-left-color: rgb(126, 126, 126); border-right-color: rgb(126, 126, 126); border-top-color: rgb(126, 126, 126); border-bottom-color: rgb(126, 126, 126); border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px; border-top-left-radius: 3px; border-bottom-left-radius: 3px; border-top-right-radius: 3px; border-bottom-right-radius: 3px; padding-top: 3px; padding-bottom: 2px; display: none;">
+                    <uie:EnumField type="Logic.Collision.HitboxType, Assembly-CSharp" name="type-dropdown" />
+                    <uie:IntegerField label="X" value="0" name="x-field" />
+                    <uie:IntegerField label="Y" value="0" name="y-field" />
+                    <uie:IntegerField label="W" value="1000" name="w-field" />
+                    <uie:IntegerField label="H" value="1000" name="h-field" />
+                    <ui:Button text="Delete" name="delete-hitbox" />
+                </ui:VisualElement>
+            </ui:VisualElement>
         </ui:VisualElement>
+        <ui:Slider picking-mode="Ignore" label="Scale" value="0.25" high-value="0.5" name="scale-slider" low-value="0.01" />
     </ui:VisualElement>
 </ui:UXML>

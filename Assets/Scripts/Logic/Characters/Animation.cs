@@ -7,5 +7,7 @@ namespace Logic.Characters
     {
         public int Duration;
         public HitboxTimeline Hitboxes;
+        
+        
     }
 }

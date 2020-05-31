@@ -15,9 +15,9 @@ MonoBehaviour:
   Motion: 236
   Buttons: 48
   Flags: 1
-  Level: 2
+  Level: 0
   Force:
     x: 0
-    y: 1.97
+    y: 0
   Hits: 1
   Animation: {fileID: 11400000, guid: 23b5d82ec08c9d04dacda63ed9c7787c, type: 2}

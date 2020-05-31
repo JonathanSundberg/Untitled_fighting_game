@@ -1,52 +1,76 @@
 ﻿using System;
+using Common;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Logic.Collision
 {
-    [Flags]
-    public enum HitboxFlag
+    public enum HitboxType
     {
-        Hurt       = 0x01,
-        High       = 0x02,
-        Mid        = 0x04,
-        Low        = 0x08,
-        Projectile = 0x10,
+        Body,
+        Attack
+    }
+
+    public enum CollisionType
+    {
+        None,
+        Clash,
+        Hit,
     }
 
     [Serializable]
     public struct Hitbox
     {
-        public HitboxFlag Flags;
-        public Rect Rect;
+        public HitboxType Type;
+        public int2 Position;
+        public int2 Size;
     }
 
     public static class HitboxExtensions
     {
-        private static readonly Color _defaultColor = new Color(0.6f,  0.6f,  0.6f);
-        private static readonly Color _bodyColor    = new Color(0.36f, 0.6f,  0.24f);
-        private static readonly Color _highColor    = new Color(0.6f,  0.24f, 0.24f);
-        private static readonly Color _midColor     = new Color(0.6f,  0.39f, 0.24f);
-        private static readonly Color _lowColor     = new Color(0.6f,  0.54f, 0.24f);
-
-        public static Rect GetRect(this Hitbox hitbox, PlayerState state)
+        private static readonly Color _bodyColor = new Color(0.37f, 0.8f, 0.16f);
+        private static readonly Color _attackColor = new Color(0.6f, 0.12f, 0.12f);
+        
+        public static bool Intersects(this Hitbox a, Hitbox b)
         {
-            var rect = hitbox.Rect;
-            rect.Position *= state.LookDirection;
-            rect.Position += state.Position;
-            return rect;
+            return math.all(a.Position < b.Position + b.Size) 
+                && math.all(a.Position + a.Size > b.Position);
         }
 
-        public static void DebugDraw(this Hitbox hitbox, PlayerState state)
+        public static CollisionType CheckCollisionType(this Hitbox a, Hitbox b)
         {
-            var rect = hitbox.GetRect(state);
+            if (a.Type == HitboxType.Attack)
+            {
+                if (b.Type == HitboxType.Attack) return CollisionType.Clash;
+                if (b.Type == HitboxType.Body) return CollisionType.Hit;
+            }
 
-            Vector2 _00 = rect.Position + rect.Size * new float2(-0.5f,  0f);
-            Vector2 _01 = rect.Position + rect.Size * new float2(-0.5f,  1f);
-            Vector2 _10 = rect.Position + rect.Size * new float2( 0.5f,  0f);
-            Vector2 _11 = rect.Position + rect.Size * new float2( 0.5f,  1f);
+            return CollisionType.None;
+        }
 
-            var color = (hitbox.Flags & HitboxFlag.Hurt) > 0 ? _bodyColor : _highColor;
+        public static Hitbox GetTransformed(this Hitbox hitbox, PlayerState state)
+        {
+            var offsetHitbox = hitbox;
+            offsetHitbox.Position *= state.LookDirection;
+            offsetHitbox.Position += state.Position;
+            return offsetHitbox;
+        }
+
+        public static void DebugDraw(this Hitbox hitbox)
+        {
+            Vector2 _00 = hitbox.Position + hitbox.Size * new float2(-0.5f,  0f);
+            Vector2 _01 = hitbox.Position + hitbox.Size * new float2(-0.5f,  1f);
+            Vector2 _10 = hitbox.Position + hitbox.Size * new float2( 0.5f,  0f);
+            Vector2 _11 = hitbox.Position + hitbox.Size * new float2( 0.5f,  1f);
+
+            Color color;
+            switch (hitbox.Type)
+            {
+                case HitboxType.Body: color = _bodyColor; break;
+                case HitboxType.Attack: color = _attackColor; break;
+                default: throw new ArgumentOutOfRangeException();
+            }
 
             Debug.DrawLine(_00, _01, color, 0, false);
             Debug.DrawLine(_11, _01, color, 0, false);

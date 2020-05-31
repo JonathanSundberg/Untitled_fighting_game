@@ -14,6 +14,37 @@ namespace Logic
         Left  = 0x04,
         Right = 0x08,
     }
+
+    public static class DirectionUtility
+    {
+        public static Direction ToDirection(this short numpadDirection, bool reverseInputs = false)
+        {
+            return ((byte) numpadDirection).ToDirection(reverseInputs);
+        }
+
+        public static Direction ToDirection(this byte numpadDirection, bool reverseInputs = false)
+        {
+            if (numpadDirection < 1 || numpadDirection > 9) throw new ArgumentOutOfRangeException();
+            
+            var direction = default(Direction);
+            var modulus = (numpadDirection - 1) % 3;
+            direction |= numpadDirection >= 7 ? Direction.Up : 0;
+            direction |= numpadDirection <= 3 ? Direction.Down : 0;
+        
+            if (!reverseInputs)
+            {
+                direction |= modulus < 1 ? Direction.Left : 0;
+                direction |= modulus > 1 ? Direction.Right : 0;
+            }
+            else
+            {
+                direction |= modulus < 1 ? Direction.Right : 0;
+                direction |= modulus > 1 ? Direction.Left : 0;
+            }
+        
+            return direction;
+        }
+    }
     
     [Flags]
     public enum Button : byte

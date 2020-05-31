@@ -93,31 +93,10 @@ namespace Logic
             for (var digitIndex = 0; digitIndex < length; digitIndex++)
             {
                 var digit = GetDigit(motion, length, digitIndex);
-                directions[digitIndex] = NumpadToDirection(digit, reverseInputs);
+                directions[digitIndex] = digit.ToDirection(reverseInputs);
             }
 
             return directions;
-        }
-
-        private static Direction NumpadToDirection(byte numpadNotation, bool reverseInputs)
-        {
-            var direction = default(Direction);
-            var modulus = (numpadNotation - 1) % 3;
-            direction |= numpadNotation >= 7 ? Direction.Up : 0;
-            direction |= numpadNotation <= 3 ? Direction.Down : 0;
-            
-            if (!reverseInputs)
-            {
-                direction |= modulus < 0 ? Direction.Left : 0;
-                direction |= modulus > 0 ? Direction.Right : 0;
-            }
-            else
-            {
-                direction |= modulus < 0 ? Direction.Right : 0;
-                direction |= modulus > 0 ? Direction.Left : 0;
-            }
-            
-            return direction;
         }
 
         private static byte GetDigit(int number, int length, int index)

@@ -7,7 +7,7 @@ namespace Common
         public static byte[] ToBytes<T>(this T @struct)
         where T : struct
         {
-            var handle = default(GCHandle);
+            GCHandle handle;
             var bytes = new byte[Marshal.SizeOf<T>()];
 
             try
@@ -26,8 +26,8 @@ namespace Common
         public static T ToStruct<T>(this byte[] bytes)
         where T : struct
         {
-            var handle = default(GCHandle);
-            var @struct = default(T);
+            GCHandle handle;
+            T @struct;
             
             try
             {

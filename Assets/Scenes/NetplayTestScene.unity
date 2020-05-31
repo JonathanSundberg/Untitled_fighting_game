@@ -407,8 +407,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 641511352}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 10, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 2000, y: 0, z: 0}
+  m_LocalScale: {x: 800, y: 1800, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 7
@@ -494,8 +494,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 837322901}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -10, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: -2000, y: 0, z: 0}
+  m_LocalScale: {x: 800, y: 1800, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 6
@@ -717,14 +717,12 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1177745481}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: eae7075c817c9a44b87886d50e51d97a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _player1Character: {fileID: 11400000, guid: 35ff7a4d305ba5b4eb886c826d4c961b, type: 2}
   _player1Transform: {fileID: 837322903}
-  _player2Character: {fileID: 11400000, guid: 35ff7a4d305ba5b4eb886c826d4c961b, type: 2}
   _player2Transform: {fileID: 641511354}
 --- !u!4 &1177745483
 Transform:
@@ -747,15 +745,25 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1177745481}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f1815beeb9ba9384ba0e197fb71911c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _player1Character: {fileID: 11400000, guid: 35ff7a4d305ba5b4eb886c826d4c961b, type: 2}
   _player1Transform: {fileID: 837322903}
-  _player2Character: {fileID: 11400000, guid: 35ff7a4d305ba5b4eb886c826d4c961b, type: 2}
   _player2Transform: {fileID: 641511354}
+  _gameState:
+    GameSettings: {fileID: 11400000, guid: a288c9a4c6f908842ba9507ee3137023, type: 2}
+    Player1:
+      Character: {fileID: 11400000, guid: 35ff7a4d305ba5b4eb886c826d4c961b, type: 2}
+      Position:
+        x: -1000
+        y: 0
+    Player2:
+      Character: {fileID: 11400000, guid: 35ff7a4d305ba5b4eb886c826d4c961b, type: 2}
+      Position:
+        x: 1000
+        y: 0
 --- !u!1 &1263540205
 GameObject:
   m_ObjectHideFlags: 0
@@ -841,7 +849,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 25
+  orthographic size: 3500
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -865,7 +873,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1263540205}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 15, z: -10}
+  m_LocalPosition: {x: 0, y: 1000, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}

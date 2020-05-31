@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Common;
 using Logic;
 using Network.Rollback;
 using Unity.Mathematics;
@@ -12,20 +13,16 @@ public class LocalNetcodeTestManager : MonoBehaviour
 {
     private GameSynchronizer<GameState, InputState> _gameSynchronizer;
 
-    private GameState _gameState;
-    
     private PlayerHandle _p1Handle;
     private PlayerHandle _p2Handle;
     
+    [SerializeField] private GameState _gameState;
     [SerializeField] private Transform _p1Transform;
     [SerializeField] private Transform _p2Transform;
     [SerializeField] private Slider _p2Delay;
 
     private void Start()
     {
-        _gameState.Player1.Position = (Vector2) _p1Transform.position;
-        _gameState.Player2.Position = (Vector2) _p2Transform.position;
-
         _gameSynchronizer = new GameSynchronizer<GameState, InputState>();
         _gameSynchronizer.SimulateGame += SimulateGame;
         _gameSynchronizer.SaveGame += SaveGame; 
@@ -58,8 +55,8 @@ public class LocalNetcodeTestManager : MonoBehaviour
 
         _gameSynchronizer.Update(Time.deltaTime * 1000);
         
-        _p1Transform.position = (Vector2) _gameState.Player1.Position;
-        _p2Transform.position = (Vector2) _gameState.Player2.Position;
+        _p1Transform.position = new Vector2(_gameState.Player1.Position.x, _gameState.Player1.Position.y);
+        _p2Transform.position = new Vector2(_gameState.Player2.Position.x, _gameState.Player2.Position.y);
         Profiler.EndSample();
     }
     

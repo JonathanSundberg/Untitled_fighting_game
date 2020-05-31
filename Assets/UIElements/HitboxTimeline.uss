@@ -1,19 +1,73 @@
+.unity-label {
+    -unity-text-align: middle-left;
+    margin-left: 4px;
+    margin-right: 8px;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.unity-base-field__label {
+    min-width: auto;
+    padding-left: 0;
+    padding-right: 0;
+}
+
 .hitbox {
-    border-left-color: rgba(255, 255, 255, 0.2);
-    border-right-color: rgba(255, 255, 255, 0.2);
-    border-top-color: rgba(255, 255, 255, 0.2);
-    border-bottom-color: rgba(255, 255, 255, 0.2);
+    background-color: rgba(255, 255, 255, 0.1);
+    position: absolute;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+}
+
+.hitbox-body {
+    border-left-color: rgba(136, 204, 102, 0.5);
+    border-right-color: rgba(136, 204, 102, 0.5);
+    border-top-color: rgba(136, 204, 102, 0.5);
+    border-bottom-color: rgba(136, 204, 102, 0.5);
+    background-color: rgba(95, 204, 41, 0.25);
+}
+
+.keyframe-dot {
+    width: 10px;
+    height: 10px;
+    border-left-color: rgb(143, 143, 143);
+    border-right-color: rgb(143, 143, 143);
+    border-top-color: rgb(143, 143, 143);
+    border-bottom-color: rgb(143, 143, 143);
     border-left-width: 2px;
     border-right-width: 2px;
     border-top-width: 2px;
     border-bottom-width: 2px;
-    background-color: rgba(255, 255, 255, 0.1);
+    border-top-left-radius: 100px;
+    border-bottom-left-radius: 100px;
+    border-top-right-radius: 100px;
+    border-bottom-right-radius: 100px;
+    position: absolute;
+    top: 5px;
+    margin-left: -5px;
+    background-color: rgb(143, 143, 143);
 }
 
-.hurt {
-    border-left-color: rgba(71, 152, 31, 0.6);
-    border-right-color: rgba(71, 152, 31, 0.6);
-    border-top-color: rgba(71, 152, 31, 0.6);
-    border-bottom-color: rgba(71, 152, 31, 0.6);
-    background-color: rgba(95, 204, 41, 0.4);
+.hitbox:hover {
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+}
+
+.hitbox-attack {
+    border-left-color: rgba(255, 153, 153, 0.5);
+    border-right-color: rgba(255, 153, 153, 0.5);
+    border-top-color: rgba(255, 153, 153, 0.5);
+    border-bottom-color: rgba(255, 153, 153, 0.5);
+    background-color: rgba(255, 64, 64, 0.25);
+}
+
+#context-menu .unity-label {
+    min-width: 15px;
+}
+
+#context-menu .unity-field {
 }
